@@ -1,0 +1,40 @@
+/* 账号动作与安全列表样式 */
+.list {
+  background: #fff;
+  border-radius: 10px;
+  margin: 12px 0 24px 0;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(44,62,80,0.04);
+}
+.item {
+  display: flex;
+  align-items: center;
+  height: 52px;
+  padding: 0 16px;
+  border-bottom: 1px solid #F1F5F8;
+  font-size: 15px;
+  color: #2C3E50;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.item:last-child {
+  border-bottom: none;
+}
+.item:active {
+  background: #F4F6F8;
+}
+.icon {
+  font-size: 18px;
+  margin-right: 12px;
+  color: #607080;
+}
+.text {
+  flex: 1;
+}
+.arrow {
+  font-size: 16px;
+  color: #CBD5E1;
+}
+.danger {
+  color: #F43F5E;
+}
