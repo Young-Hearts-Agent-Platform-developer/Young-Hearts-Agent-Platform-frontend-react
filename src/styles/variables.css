@@ -1,6 +1,24 @@
 /* 通用样式变量 */
 :root {
   --yh-primary-color: #1677ff;
+  --yh-card-main-color: #4f8cff;
+  --yh-card-sub-color: #aaa;
+  --yh-card-category-color: #ffb300;
+  --yh-card-expert-color: #43c59e;
+  --yh-card-bg: #fff;
+  --yh-card-sub-bg: #fafbfc;
+  --yh-card-category-bg: #fffbe6;
+  --yh-card-expert-bg: #f0fdf6;
+  --yh-card-radius: 16px;
+  --yh-card-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  --yh-card-shadow-hover: 0 4px 16px rgba(0,0,0,0.12);
+  --yh-card-transition: box-shadow 0.2s, transform 0.2s;
+  --yh-card-focus-ring: 0 0 0 3px #4f8cff55;
+  --yh-card-title-color: #222;
+  --yh-card-subtitle-color: #888;
+  --yh-card-btn-bg: var(--yh-primary-color);
+  --yh-card-btn-bg-disabled: #ccc;
+  --yh-card-btn-color: #fff;
   --yh-radius: 12px;
   --yh-header-height: 48px;
   --yh-header-bg: var(--yh-primary-color);
