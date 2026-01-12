@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import HomeLayout from '../../layouts/HomeLayout';
 import appIcon from '../../assets/app_icon.png';
 import Card from '../../components/Card';
+import SectionContainer from '../../components/SectionContainer';
 import { MessageOutline, BillOutline, TeamOutline } from 'antd-mobile-icons';
 
 export default function HomePage() {
@@ -59,46 +60,48 @@ export default function HomePage() {
           <div className="home-title" style={{ fontSize: 24, fontWeight: 700, marginBottom: 8, color: 'var(--color-primary)' }}>心青年智能体平台</div>
           <div className="home-subtitle" style={{ fontSize: 14, color: 'var(--color-text-secondary)' }}>陪伴·成长·互助</div>
         </div>
-        {/* 下半部分：主副入口卡片区（Card组件组合） */}
-        <div className="home-card-section" style={{ width: '100%', maxWidth: 440, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 20 }}>
-          <Card
-            type="main"
-            icon={<MessageOutline />}
-            title="智能体咨询"
-            subtitle="与AI智能体对话，获得陪伴与建议"
-            // className="main-card"
-            aria-label="智能体咨询"
-            tabIndex={0}
-            onClick={() => navigate('/consultation')}
-            onKeyDown={e => handleKeyDown(e, '/consultation')}
-          />
-          <div className="sub-entry-cards" style={{ display: 'flex', gap: 16 }}>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <Card
-                type="sub"
-                icon={<BillOutline />}
-                title="查资料"
-                subtitle="心理知识库"
-                aria-label="查资料"
-                tabIndex={0}
-                onClick={() => navigate('/knowledge')}
-                onKeyDown={e => handleKeyDown(e, '/knowledge')}
-              />
-            </div>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <Card
-                type="sub"
-                icon={<TeamOutline />}
-                title="找帮手"
-                subtitle="互助社区"
-                aria-label="找帮手"
-                tabIndex={0}
-                onClick={() => navigate('/community')}
-                onKeyDown={e => handleKeyDown(e, '/community')}
-              />
+        {/* 下半部分：主副入口卡片区（SectionContainer 包裹 Card 组件组合） */}
+        <SectionContainer title="功能入口" className="home-card-section" >
+          <div style={{ width: '100%', maxWidth: 440, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 20 }}>
+            <Card
+              type="main"
+              icon={<MessageOutline />}
+              title="智能体咨询"
+              subtitle="与AI智能体对话，获得陪伴与建议"
+              // className="main-card"
+              aria-label="智能体咨询"
+              tabIndex={0}
+              onClick={() => navigate('/consultation')}
+              onKeyDown={e => handleKeyDown(e, '/consultation')}
+            />
+            <div className="sub-entry-cards" style={{ display: 'flex', gap: 16 }}>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <Card
+                  type="sub"
+                  icon={<BillOutline />}
+                  title="查资料"
+                  subtitle="心理知识库"
+                  aria-label="查资料"
+                  tabIndex={0}
+                  onClick={() => navigate('/knowledge')}
+                  onKeyDown={e => handleKeyDown(e, '/knowledge')}
+                />
+              </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <Card
+                  type="sub"
+                  icon={<TeamOutline />}
+                  title="找帮手"
+                  subtitle="互助社区"
+                  aria-label="找帮手"
+                  tabIndex={0}
+                  onClick={() => navigate('/community')}
+                  onKeyDown={e => handleKeyDown(e, '/community')}
+                />
+              </div>
             </div>
           </div>
-        </div>
+        </SectionContainer>
       </div>
     </HomeLayout>
   );
