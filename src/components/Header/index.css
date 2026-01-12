@@ -1,0 +1,21 @@
+@import '../../styles/variables.css';
+
+.yh-header {
+  height: var(--yh-header-height);
+  background: var(--yh-header-bg);
+  color: var(--yh-header-color);
+  border-radius: var(--yh-radius) var(--yh-radius) 0 0;
+  font-family: var(--yh-font-family);
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+}
+.yh-header-title {
+  font-size: 18px;
+  font-weight: 600;
+}
+.yh-header-subtitle {
+  font-size: 12px;
+  margin-left: 8px;
+  color: #e0e0e0;
+}

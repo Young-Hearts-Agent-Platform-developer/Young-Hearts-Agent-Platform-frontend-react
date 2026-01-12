@@ -1,0 +1,8 @@
+@import '../../styles/variables.css';
+
+.yh-bottomnav {
+  background: var(--yh-bottomnav-bg);
+  border-radius: 0 0 var(--yh-radius) var(--yh-radius);
+  font-family: var(--yh-font-family);
+  box-shadow: 0 -1px 8px rgba(0,0,0,0.03);
+}

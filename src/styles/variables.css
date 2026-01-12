@@ -1,0 +1,12 @@
+/* 通用样式变量 */
+:root {
+  --yh-primary-color: #1677ff;
+  --yh-radius: 12px;
+  --yh-header-height: 48px;
+  --yh-header-bg: var(--yh-primary-color);
+  --yh-header-color: #fff;
+  --yh-bottomnav-bg: #fff;
+  --yh-bottomnav-active: var(--yh-primary-color);
+  --yh-bottomnav-inactive: #888;
+  --yh-font-family: 'PingFang SC', 'Helvetica Neue', Arial, 'Microsoft YaHei', sans-serif;
+}
