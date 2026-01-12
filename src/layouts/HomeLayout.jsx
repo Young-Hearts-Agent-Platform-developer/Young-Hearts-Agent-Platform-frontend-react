@@ -10,9 +10,9 @@ import '../styles/variables.css';
  */
 const HomeLayout = ({ title, subtitle, rightActions, children, activeKey, onTabChange }) => {
   return (
-    <div className="yh-home-layout" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <div className="yh-home-layout-fixed">
       <Header title={title} subtitle={subtitle} rightActions={rightActions} />
-      <main style={{ flex: 1, width: '100%' }}>{children}</main>
+      <main className="yh-home-main-scrollable">{children}</main>
       <BottomNav activeKey={activeKey} onTabChange={onTabChange} />
     </div>
   );

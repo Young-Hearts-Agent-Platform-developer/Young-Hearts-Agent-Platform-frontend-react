@@ -1,5 +1,16 @@
 /* 通用样式变量（Phase 6 适配，命名与设计规范统一） */
 :root {
+    --color-card-sub: #43c59e;
+    --color-card-sub-bg: #fafbfc;
+    --color-card-category: #ffb300;
+    --color-card-category-bg: #fffbe6;
+    --color-card-expert: #43c59e;
+    --color-card-expert-bg: #f0fdf6;
+    --color-card-title: #222;
+    --color-card-subtitle: #888;
+    --color-card-btn-bg: var(--color-primary);
+    --color-card-btn-color: #fff;
+    --color-card-btn-bg-disabled: #ccc;
   /* 主色、辅助色、禁用色、对比度、圆角、阴影、背景、文本色等 */
   --color-primary: #4A90E2;
   --color-secondary: #43c59e;
@@ -7,6 +18,16 @@
   --color-error: #ff4d4f;
   --color-disabled: #ccc;
   --color-bg: #fff;
+  /* Card 组件专用变量 */
+  --color-card-bg: #fff;
+  --color-card-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  --color-card-shadow-hover: 0 4px 16px rgba(0,0,0,0.12);
+  --color-card-border: #e5e6eb;
+  --color-card-font: #222;
+  --color-card-main: #4A90E2;
+  --color-card-radius: 16px;
+  --color-card-transition: box-shadow 0.2s, transform 0.2s;
+  --color-card-focus-ring: 0 0 0 3px #4A90E255;
   --color-bg-secondary: #fafbfc;
   --color-bg-category: #fffbe6;
   --color-bg-expert: #f0fdf6;

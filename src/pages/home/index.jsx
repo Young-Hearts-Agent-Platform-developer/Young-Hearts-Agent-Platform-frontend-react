@@ -69,56 +69,36 @@ export default function HomePage() {
             className="main-card"
             aria-label="智能体咨询"
             tabIndex={0}
-            style={{
-              background: 'var(--color-bg)',
-              borderRadius: 'var(--radius-md)',
-              boxShadow: 'var(--shadow-card)',
-              color: 'var(--color-text)',
-              outline: 'none',
-              transition: 'var(--transition-card)'
-            }}
             onClick={() => navigate('/consultation')}
             onKeyDown={e => handleKeyDown(e, '/consultation')}
           />
-          <div className="sub-entry-cards" style={{ display: 'flex', gap: 16, justifyContent: 'center' }}>
-            <Card
-              type="sub"
-              icon={<BillOutline />}
-              title="查资料"
-              subtitle="心理知识库"
-              className="sub-card"
-              aria-label="查资料"
-              tabIndex={0}
-              style={{
-                background: 'var(--color-bg-secondary)',
-                borderRadius: 'var(--radius-md)',
-                boxShadow: 'var(--shadow-card)',
-                color: 'var(--color-text)',
-                outline: 'none',
-                transition: 'var(--transition-card)'
-              }}
-              onClick={() => navigate('/knowledge')}
-              onKeyDown={e => handleKeyDown(e, '/knowledge')}
-            />
-            <Card
-              type="sub"
-              icon={<TeamOutline />}
-              title="找帮手"
-              subtitle="互助社区"
-              className="sub-card"
-              aria-label="找帮手"
-              tabIndex={0}
-              style={{
-                background: 'var(--color-bg-secondary)',
-                borderRadius: 'var(--radius-md)',
-                boxShadow: 'var(--shadow-card)',
-                color: 'var(--color-text)',
-                outline: 'none',
-                transition: 'var(--transition-card)'
-              }}
-              onClick={() => navigate('/community')}
-              onKeyDown={e => handleKeyDown(e, '/community')}
-            />
+          <div className="sub-entry-cards" style={{ display: 'flex', gap: 16 }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <Card
+                type="sub"
+                icon={<BillOutline />}
+                title="查资料"
+                subtitle="心理知识库"
+                className="sub-card"
+                aria-label="查资料"
+                tabIndex={0}
+                onClick={() => navigate('/knowledge')}
+                onKeyDown={e => handleKeyDown(e, '/knowledge')}
+              />
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <Card
+                type="sub"
+                icon={<TeamOutline />}
+                title="找帮手"
+                subtitle="互助社区"
+                className="sub-card"
+                aria-label="找帮手"
+                tabIndex={0}
+                onClick={() => navigate('/community')}
+                onKeyDown={e => handleKeyDown(e, '/community')}
+              />
+            </div>
           </div>
         </div>
       </div>
