@@ -66,7 +66,7 @@ export default function HomePage() {
             icon={<MessageOutline />}
             title="智能体咨询"
             subtitle="与AI智能体对话，获得陪伴与建议"
-            className="main-card"
+            // className="main-card"
             aria-label="智能体咨询"
             tabIndex={0}
             onClick={() => navigate('/consultation')}
@@ -79,7 +79,6 @@ export default function HomePage() {
                 icon={<BillOutline />}
                 title="查资料"
                 subtitle="心理知识库"
-                className="sub-card"
                 aria-label="查资料"
                 tabIndex={0}
                 onClick={() => navigate('/knowledge')}
@@ -92,7 +91,6 @@ export default function HomePage() {
                 icon={<TeamOutline />}
                 title="找帮手"
                 subtitle="互助社区"
-                className="sub-card"
                 aria-label="找帮手"
                 tabIndex={0}
                 onClick={() => navigate('/community')}

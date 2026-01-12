@@ -18,10 +18,10 @@ const Header = ({ title, subtitle, showBack = false, rightActions, children }) =
         back={showBack ? '返回' : null}
         right={rightActions}
         style={{
-          background: 'var(--yh-header-bg)',
-          color: 'var(--yh-header-color)',
-          borderRadius: 'var(--yh-radius)',
-          fontFamily: 'var(--yh-font-family)',
+          background: 'var(--header-bg)',
+          color: 'var(--header-color)',
+          borderRadius: 'var(--radius-lg)',
+          fontFamily: 'var(--font-family)',
         }}
       >
         <div className="yh-header-title">
