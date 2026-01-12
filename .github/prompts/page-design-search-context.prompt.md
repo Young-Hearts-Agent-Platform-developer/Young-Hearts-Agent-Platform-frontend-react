@@ -1,9 +1,8 @@
 ---
 description: "自动检索 /docs/page-designs 目录下与当前任务相关的页面设计文档，并将其内容补充为上下文，以优化智能体的生成结果。"
-name: "PageDesignSearchContext"
+name: "page-design-search-context"
 argument-hint: "引用本提示词后，正常输入你的任务指令，智能体将自动补充相关页面设计文档上下文。"
 model: GPT-4.1
-tools: ['read', 'search/codebase']
 ---
 
 # 页面设计文档上下文增强指令
