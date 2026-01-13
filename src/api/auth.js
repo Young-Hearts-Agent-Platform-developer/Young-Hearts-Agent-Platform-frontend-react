@@ -8,7 +8,8 @@
 // 后续可切换为独立 mock 文件或通过环境变量配置
 export const MOCK_USER = {
   nickname: '心青年开发者',
-  roles: ['志愿者'], 
+  // roles: ['volunteer', 'expert', 'admin', 'maintainer'],
+  roles: ['volunteer'],
   avatar: '/src/assets/user.png',
   email: 'devuser@younghearts.com',
   id: 'mock-001',

@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { useUser } from '../../store/useUser';
 import { useNavigate } from 'react-router-dom';
 import HomeLayout from '../../layouts/HomeLayout';
 import appIcon from '../../assets/app_icon.png';
@@ -9,6 +10,7 @@ import { MessageOutline, BillOutline, TeamOutline } from 'antd-mobile-icons';
 
 export default function HomePage() {
   const navigate = useNavigate();
+  const { user } = useUser();
 
   // 键盘可达处理
   const handleKeyDown = (e, path) => {
@@ -22,6 +24,94 @@ export default function HomePage() {
   const [loading] = useState(false); // 示例：实际可用请求状态
   const [error] = useState(false);
   const [empty] = useState(false);
+
+  // 统一服务中心分区角色控制：仅非家属可见
+  const isFamily = user?.roles?.includes('family');
+  // 卡片角色配置
+  const serviceCenterCards = [
+    {
+      block: '知识管理',
+      cards: [
+        {
+          icon: <BillOutline />,
+          title: '知识贡献',
+          subtitle: '分享你的专业经验，助力知识库建设',
+          allowedRoles: ['volunteer', 'expert', 'admin', 'maintainer'],
+          onClick: () => navigate('/workspace/contribute'),
+        },
+        {
+          icon: <MessageOutline />,
+          title: '知识审核列表',
+          subtitle: '待审核条目，快速处理',
+          allowedRoles: ['expert', 'admin', 'maintainer'],
+          onClick: () => navigate('/workspace/review'),
+        },
+      ],
+    },
+    {
+      block: '任务与工单',
+      cards: [
+        {
+          icon: <TeamOutline />,
+          title: '任务大厅',
+          subtitle: '浏览与认领任务',
+          allowedRoles: ['volunteer', 'expert', 'admin', 'maintainer'],
+          onClick: () => navigate('/tasks'),
+        },
+        {
+          icon: <BillOutline />,
+          title: '工单处理',
+          subtitle: '快速处理工单，优先级标记',
+          allowedRoles: ['admin', 'maintainer'],
+          onClick: () => navigate('/workspace/tickets'),
+        },
+      ],
+    },
+    {
+      block: '排班与活动管理',
+      cards: [
+        {
+          icon: <MessageOutline />,
+          title: '排班管理',
+          subtitle: '查看与报名班次，活动日历',
+          allowedRoles: ['volunteer', 'expert', 'admin', 'maintainer'],
+          onClick: () => navigate('/schedule'),
+        },
+      ],
+    },
+    {
+      block: '服务记录',
+      cards: [
+        {
+          icon: <BillOutline />,
+          title: '服务记录',
+          subtitle: '统计与历史工单，服务时长',
+          allowedRoles: ['volunteer', 'expert', 'admin', 'maintainer'],
+          onClick: () => navigate('/logs'),
+        },
+      ],
+    },
+    {
+      block: '系统管理',
+      cards: [
+        {
+          icon: <TeamOutline />,
+          title: '人员管理',
+          subtitle: '管理平台用户与权限',
+          allowedRoles: ['admin', 'maintainer'],
+          onClick: () => navigate('/admin/users'),
+        },
+        {
+          icon: <BillOutline />,
+          title: '运维监控',
+          subtitle: '查看系统日志与告警',
+          allowedRoles: ['maintainer'],
+          onClick: () => navigate('/admin/monitor'),
+        },
+      ],
+    },
+  ];
+
 
   return (
     <HomeLayout
@@ -102,7 +192,41 @@ export default function HomePage() {
             </div>
           </div>
         </SectionContainer>
+        {/* 统一服务中心分区：仅非家属可见 */}
+        {!isFamily && (
+            <SectionContainer title="统一服务中心" className="service-center-section">
+              {serviceCenterCards.map(block => {
+                // 过滤出当前 block 可见的卡片
+                const visibleCards = block.cards.filter(card => {
+                  if (!card.allowedRoles || !user?.roles) return false;
+                  return card.allowedRoles.some(role => user.roles.includes(role));
+                });
+                // 若无可见卡片，则不渲染该 block
+                if (visibleCards.length === 0) return null;
+                return (
+                  <div className="service-block" style={{ marginBottom: 24 }} key={block.block}>
+                    <div className="service-block-title" style={{ fontWeight: 600, fontSize: 18, marginBottom: 12 }}>{block.block}</div>
+                    <div style={{ display: 'flex', gap: 16 }}>
+                      {visibleCards.map(card => (
+                        <Card
+                          key={card.title}
+                          type="sub"
+                          icon={card.icon}
+                          title={card.title}
+                          subtitle={card.subtitle}
+                          aria-label={card.title}
+                          tabIndex={0}
+                          onClick={card.onClick}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </SectionContainer>
+        )}
       </div>
     </HomeLayout>
-  );
+  )
+    
 }
