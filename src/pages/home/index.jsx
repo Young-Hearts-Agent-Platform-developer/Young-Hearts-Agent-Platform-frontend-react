@@ -61,7 +61,7 @@ export default function HomePage() {
           <div className="home-subtitle" style={{ fontSize: 14, color: 'var(--color-text-secondary)' }}>陪伴·成长·互助</div>
         </div>
         {/* 下半部分：主副入口卡片区（SectionContainer 包裹 Card 组件组合） */}
-        <SectionContainer title="功能入口" className="home-card-section" >
+        <SectionContainer title="暖心服务站" className="home-card-section" >
           <div style={{ width: '100%', maxWidth: 440, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 20 }}>
             <Card
               type="main"
@@ -80,7 +80,7 @@ export default function HomePage() {
                   type="sub"
                   icon={<BillOutline />}
                   title="查资料"
-                  subtitle="心理知识库"
+                  subtitle="专业知识库"
                   aria-label="查资料"
                   tabIndex={0}
                   onClick={() => navigate('/knowledge')}
