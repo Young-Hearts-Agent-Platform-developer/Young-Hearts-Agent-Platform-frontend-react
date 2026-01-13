@@ -13,6 +13,7 @@ export const UserProvider = ({ children }) => {
     try {
       const res = await getCurrentUser();
       setUser(res.user || null);
+      console.log('当前用户信息：', res.user);
     } catch {
       setUser(null);
     } finally {

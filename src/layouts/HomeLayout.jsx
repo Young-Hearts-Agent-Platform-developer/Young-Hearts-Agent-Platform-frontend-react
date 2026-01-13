@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import Header from '../components/Header';
 import BottomNav from '../components/BottomNav';
 import '../styles/variables.css';
-import { UserProvider } from '../store/UserContext';
 
 /**
  * 一级页面布局组件
@@ -13,13 +12,11 @@ import { UserProvider } from '../store/UserContext';
 
 const HomeLayout = ({ title, subtitle, rightActions, children, activeKey, onTabChange }) => {
   return (
-    <UserProvider>
-      <div className="yh-home-layout-fixed">
-        <Header title={title} subtitle={subtitle} rightActions={rightActions} />
-        <main className="yh-home-main-scrollable">{children}</main>
-        <BottomNav activeKey={activeKey} onTabChange={onTabChange} />
-      </div>
-    </UserProvider>
+    <div className="yh-home-layout-fixed">
+      <Header title={title} subtitle={subtitle} rightActions={rightActions} />
+      <main className="yh-home-main-scrollable">{children}</main>
+      <BottomNav activeKey={activeKey} onTabChange={onTabChange} />
+    </div>
   );
 };
 

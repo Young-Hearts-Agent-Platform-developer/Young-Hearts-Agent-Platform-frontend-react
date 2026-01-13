@@ -1,6 +1,8 @@
 
 
 import React from 'react';
+import userAvatar from '../../assets/user.png';
+import { useUser } from '../../store/useUser';
 import { useNavigate } from 'react-router-dom';
 import HomeLayout from '../../layouts/HomeLayout';
 import SectionContainer from '../../components/SectionContainer';
@@ -10,10 +12,43 @@ import { ClockCircleOutline, StarOutline, SetOutline } from 'antd-mobile-icons';
 
 const MyPage = () => {
   const navigate = useNavigate();
-  // 顶部个人信息卡（空白占位）
+  const { user } = useUser();
+  // 顶部个人信息卡实现
   const infoCard = (
     <SectionContainer className="my-info-card">
-      {/* 个人信息卡内容占位，无需实现 */}
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        {/* 头像 */}
+        <img
+          src={user?.avatar || userAvatar}
+          alt="头像"
+          style={{ width: 64, height: 64, borderRadius: '50%', marginRight: 16, objectFit: 'cover', background: '#f5f5f5' }}
+        />
+        {/* 昵称与标签 */}
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: 18, fontWeight: 500, marginBottom: 8 }}>
+            {user ? user.nickname : '未登录'}
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+            {(user?.roles || []).map((role, idx) => (
+              <span
+                key={role + idx}
+                style={{
+                  display: 'inline-block',
+                  padding: '2px 10px',
+                  borderRadius: 12,
+                  background: '#e6f4ff',
+                  color: '#1677ff',
+                  fontSize: 13,
+                  marginBottom: 4,
+                  wordBreak: 'keep-all',
+                }}
+              >
+                {role}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
     </SectionContainer>
   );
 
@@ -38,7 +73,7 @@ const MyPage = () => {
     </SectionContainer>
   );
 
-  // 底部登出按钮占位
+  // 底部登出按钮
   const logoutBtn = <LogoutButton />;
 
   return (
