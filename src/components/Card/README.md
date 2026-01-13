@@ -16,6 +16,7 @@
 | onClick      | func     | 按钮点击事件               |
 | disabled     | bool     | 是否禁用（禁用交互/样式变灰）|
 | hidden       | bool     | 是否隐藏（不渲染）         |
+| requiredRole | string/array | 需要的权限角色，未满足时不渲染 |
 | children     | node     | 插槽/自定义内容            |
 
 ---
@@ -23,6 +24,7 @@
 ## 用法示例
 ```jsx
 import Card from './index';
+
 
 // 主卡片
 <Card
@@ -34,6 +36,14 @@ import Card from './index';
   onClick={() => alert('点击')}
 >
   <div>自定义内容</div>
+</Card>
+
+// 仅管理员可见的卡片
+<Card
+  title="仅管理员可见"
+  requiredRole="admin"
+>
+  <div>只有 admin 角色用户能看到此卡片</div>
 </Card>
 
 // 禁用卡片

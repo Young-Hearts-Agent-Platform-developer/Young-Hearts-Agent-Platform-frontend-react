@@ -1,10 +1,13 @@
 import React from "react";
+import { useUser } from '../../store/useUser';
 import PropTypes from "prop-types";
 import "./index.css";
+
 
 /**
  * 通用 Card 组件
  * @param {object} props
+ * @param {string|string[]} [props.requiredRole] 需要的权限角色
  */
 const Card = ({
   type = "main",
@@ -15,10 +18,15 @@ const Card = ({
   onClick,
   disabled = false,
   hidden = false,
+  requiredRole,
   children,
   ...rest
 }) => {
+  const { checkPermission } = useUser?.() || {};
   if (hidden) return null;
+  if (requiredRole && typeof checkPermission === 'function' && !checkPermission(requiredRole)) {
+    return null;
+  }
 
   const cardClass = [
     "yh-card",
@@ -67,6 +75,10 @@ Card.propTypes = {
   onClick: PropTypes.func,
   disabled: PropTypes.bool,
   hidden: PropTypes.bool,
+  requiredRole: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.arrayOf(PropTypes.string)
+  ]),
   children: PropTypes.node,
 };
 
