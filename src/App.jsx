@@ -6,6 +6,7 @@ const HomePage = lazy(() => import('./pages/home/index.jsx'));
 const ConsultationPage = lazy(() => import('./pages/consultation/index.jsx'));
 const KnowledgePage = lazy(() => import('./pages/knowledge/index.jsx'));
 const CommunityPage = lazy(() => import('./pages/community/index.jsx'));
+const PersonalInfoPage = lazy(() => import('./pages/my/PersonalInfo.jsx'));
 const MyPage = lazy(() => import('./pages/my/index.jsx'));
 
 function NotFound() {
@@ -38,6 +39,7 @@ function App() {
             <Route path="/knowledge" element={<KnowledgePage />} />
             <Route path="/community" element={<CommunityPage />} />
             <Route path="/my" element={<MyPage />} />
+            <Route path="/my/personal-info" element={<PersonalInfoPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>

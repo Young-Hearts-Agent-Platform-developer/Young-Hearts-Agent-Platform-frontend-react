@@ -1,3 +1,23 @@
+// 预留邮箱验证接口（Phase 3 邮箱字段编辑弹窗用）
+// 用法示例：await sendEmailVerification(email)
+export async function sendEmailVerification(email) {
+  // TODO: 实现邮箱验证API调用
+  // return await fetch('/api/auth/verify-email', { method: 'POST', body: JSON.stringify({ email }) })
+  return Promise.resolve(); // 占位
+}
+// 用户信息更新接口（Phase 3）
+export async function updateUserProfile(data) {
+  // 真实环境应为 /api/users/profile
+  return fetch('/api/users/profile', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+    credentials: 'include',
+  }).then(res => {
+    if (!res.ok) throw new Error('更新失败');
+    return res.json();
+  });
+}
 // 鉴权相关 API 封装，所有请求自动携带 Cookie
 
 
@@ -8,7 +28,7 @@
 // 后续可切换为独立 mock 文件或通过环境变量配置
 export const MOCK_USER = {
   id: 0,
-  username: 'devuser',
+  username: 'dev-user',
   gender: 'male', // 新增字段
   email: 'devuser@younghearts.com',
   password_hash: 'mocked_hash',

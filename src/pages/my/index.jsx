@@ -14,10 +14,19 @@ import { ClockCircleOutline, StarOutline, SetOutline } from 'antd-mobile-icons';
 const MyPage = () => {
   const navigate = useNavigate();
   const { user } = useUser();
-  // 顶部个人信息卡实现
+  // 顶部个人信息卡实现，支持点击跳转个人信息详情页
   const infoCard = (
     <SectionContainer className="my-info-card">
-      <div style={{ display: 'flex', alignItems: 'center' }}>
+      <div
+        style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}
+        onClick={() => {
+          if (user) {
+            navigate('/my/personal-info');
+          } else {
+            // 可选：未登录时可弹出提示或跳转登录
+          }
+        }}
+      >
         {/* 头像 */}
         <img
           src={user?.avatar || userAvatar}
@@ -70,7 +79,7 @@ const MyPage = () => {
   // 中间功能列表
   const functionList = (
     <SectionContainer className="my-function-list">
-      <ListMenu items={menuItems} />
+      <ListMenu items={menuItems} align="left" />
     </SectionContainer>
   );
 
@@ -83,7 +92,6 @@ const MyPage = () => {
       activeKey="my"
       onTabChange={key => {
         if (key === 'home') navigate('/home');
-        if (key === 'my') navigate('/my');
       }}
     >
       <div className="my-page-root">

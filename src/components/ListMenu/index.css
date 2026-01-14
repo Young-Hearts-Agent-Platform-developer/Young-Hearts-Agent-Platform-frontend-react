@@ -1,4 +1,36 @@
 
+.list-menu-align-left .list-menu-content {
+  flex-direction: column;
+  align-items: flex-start;
+}
+.list-menu-align-left .list-menu-title {
+  text-align: left;
+  width: 100%;
+}
+.list-menu-align-left .list-menu-value {
+  text-align: left;
+  width: 100%;
+  color: #888;
+  margin-left: 0;
+  margin-top: 2px;
+}
+
+.list-menu-align-split .list-menu-content {
+  flex-direction: row;
+  justify-content: space-between;
+}
+.list-menu-align-split .list-menu-title {
+  text-align: left;
+}
+.list-menu-align-split .list-menu-value {
+  text-align: right;
+  color: #888;
+}
+
+.list-menu-align-custom .list-menu-content {
+  /* 预留自定义扩展 */
+}
+
 .list-menu {
   width: 100%;
   background: #fff;

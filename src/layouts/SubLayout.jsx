@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import Header from '../components/Header';
 import '../styles/variables.css';
@@ -8,6 +9,9 @@ import '../styles/variables.css';
  * 顶部为 Header（带返回），无底部导航，主内容区为 children
  */
 const SubLayout = ({ title, subtitle, rightActions, children, onBack }) => {
+  const navigate = useNavigate();
+  // 若未传递 onBack，则默认返回上一页
+  const handleBack = onBack || (() => navigate(-1));
   return (
     <div className="yh-sub-layout" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Header
@@ -15,7 +19,7 @@ const SubLayout = ({ title, subtitle, rightActions, children, onBack }) => {
         subtitle={subtitle}
         showBack
         rightActions={rightActions}
-        back={onBack}
+        back={handleBack}
       />
       <main style={{ flex: 1, width: '100%' }}>{children}</main>
     </div>
