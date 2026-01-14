@@ -1,6 +1,7 @@
 
 
 import React from 'react';
+import { getRoleDisplayName } from '../../utils/roleMapping';
 import userAvatar from '../../assets/user.png';
 import { useUser } from '../../store/useUser';
 import { useNavigate } from 'react-router-dom';
@@ -43,7 +44,7 @@ const MyPage = () => {
                   wordBreak: 'keep-all',
                 }}
               >
-                {role}
+                {getRoleDisplayName(role)}
               </span>
             ))}
           </div>
