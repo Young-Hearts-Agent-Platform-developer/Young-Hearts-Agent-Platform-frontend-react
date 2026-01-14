@@ -1,5 +1,5 @@
 ---
-name: Frontend-Frame-Designer
+name: design-frontend-frame
 description: 根据功能文档规划前端页面结构、路由关系及设计风格，并生成设计方案文档。
 argument-hint: 请提供功能文档的内容或路径（如 docs/“心青年”智能体平台-功能文档.md）
 ---
