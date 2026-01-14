@@ -9,6 +9,7 @@
 export const MOCK_USER = {
   id: 0,
   username: 'devuser',
+  gender: 'male', // 新增字段
   email: 'devuser@younghearts.com',
   password_hash: 'mocked_hash',
   nickname: '心青年开发者',

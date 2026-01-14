@@ -1,3 +1,18 @@
+// 性别映射表
+const genderMapping = {
+  male: '男',
+  female: '女',
+  hidden: '保密',
+};
+
+/**
+ * 获取性别的中文显示名称
+ * @param {string} gender
+ * @returns {string}
+ */
+export function getGenderDisplayName(gender) {
+  return genderMapping[gender] || '保密';
+}
 // 角色映射表，根据功能文档定义
 const roleMapping = {
   'patient_family': '患者家属',

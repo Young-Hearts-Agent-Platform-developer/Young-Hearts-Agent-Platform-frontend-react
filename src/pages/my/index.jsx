@@ -24,9 +24,9 @@ const MyPage = () => {
           alt="头像"
           style={{ width: 64, height: 64, borderRadius: '50%', marginRight: 16, objectFit: 'cover', background: '#f5f5f5' }}
         />
-        {/* 昵称与标签 */}
+        {/* 昵称、性别与标签 */}
         <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 18, fontWeight: 500, marginBottom: 8 }}>
+          <div style={{ fontSize: 18, fontWeight: 500, marginBottom: 4 }}>
             {user ? user.nickname : '未登录'}
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
