@@ -23,6 +23,7 @@ const baseFields = [
     onClick: () => Toast.show({ content: '暂不支持头像修改', position: 'bottom' }),
     editable: false,
   },
+  // type 可扩展为 'input' | 'segmented' | 'switch' | 'multi-select' | 'date' | 'verify' 等
   { key: 'nickname', label: '昵称', editable: true, type: 'input' },
   { key: 'gender', label: '性别', editable: true, type: 'segmented', options: [
     { label: '男', value: 'male' },
@@ -30,7 +31,7 @@ const baseFields = [
     { label: '保密', value: 'unknown' },
   ] },
   { key: 'public_email', label: '公开邮箱', editable: true, type: 'input',
-    // 预留邮箱验证接口
+    // type: 'verify' 可用于邮箱验证，verify: true 预留
     verify: true },
   { key: 'status', label: '状态', editable: false },
   { key: 'roles', label: '角色', editable: false, render: (user) => (Array.isArray(user.roles) ? user.roles.join('、') : user.roles) },
@@ -38,9 +39,9 @@ const baseFields = [
 ];
 
 const volunteerFields = [
-  { key: 'public_email', label: '公开邮箱', editable: true, type: 'input', verify: true },
+  { key: 'public_email', label: '公开邮箱', editable: true, type: 'input', verify: true }, // type: 'verify' 可扩展
   { key: 'is_public_visible', label: '是否公开', editable: true, type: 'switch' },
-  { key: 'skills', label: '擅长领域', editable: true, type: 'input' },
+  { key: 'skills', label: '擅长领域', editable: true, type: 'input' }, // type: 'multi-select' 可扩展
   { key: 'service_hours', label: '服务时长', editable: false },
   { key: 'work_status', label: '服务状态', editable: true, type: 'segmented', options: [
     { label: '在线', value: 'online' },
@@ -51,7 +52,7 @@ const volunteerFields = [
 ];
 
 const expertFields = [
-  { key: 'public_email', label: '公开邮箱', editable: true, type: 'input', verify: true },
+  { key: 'public_email', label: '公开邮箱', editable: true, type: 'input', verify: true }, // type: 'verify' 可扩展
   { key: 'is_public_visible', label: '是否公开', editable: true, type: 'switch' },
   { key: 'title', label: '头衔', editable: true, type: 'input' },
   { key: 'organization', label: '组织', editable: true, type: 'input' },
@@ -158,33 +159,63 @@ function PersonalInfo() {
   // 弹窗渲染控件
   const renderEditInput = () => {
     if (!editField) return null;
-    if (editField.type === 'input') {
-      return (
-        <Input
-          value={editValue}
-          onChange={val => setEditValue(val)}
-          placeholder={`请输入${editField.label}`}
-        />
-      );
+    switch (editField.type) {
+      case 'input':
+        return (
+          <Input
+            value={editValue}
+            onChange={val => setEditValue(val)}
+            placeholder={`请输入${editField.label}`}
+          />
+        );
+      case 'segmented':
+        if (editField.options) {
+          return (
+            <Segmented
+              options={editField.options}
+              value={editValue}
+              onChange={setEditValue}
+            />
+          );
+        }
+        break;
+      case 'switch':
+        return (
+          <div style={{ textAlign: 'center', margin: '16px 0' }}>
+            <Switch checked={!!editValue} onChange={val => setEditValue(val)} />
+          </div>
+        );
+      // 预留：多选控件
+      case 'multi-select':
+        // TODO: 后续支持多选控件
+        return (
+          <div style={{ color: '#ccc', textAlign: 'center', padding: '16px' }}>
+            暂未支持多选类型
+          </div>
+        );
+      // 预留：日期控件
+      case 'date':
+        // TODO: 后续支持日期控件
+        return (
+          <div style={{ color: '#ccc', textAlign: 'center', padding: '16px' }}>
+            暂未支持日期类型
+          </div>
+        );
+      // 预留：邮箱验证控件
+      case 'verify':
+        // TODO: 后续支持邮箱验证控件
+        return (
+          <div style={{ color: '#ccc', textAlign: 'center', padding: '16px' }}>
+            暂未支持邮箱验证类型
+          </div>
+        );
+      default:
+        return (
+          <div style={{ color: '#ccc', textAlign: 'center', padding: '16px' }}>
+            暂不支持该字段类型
+          </div>
+        );
     }
-    if (editField.type === 'segmented' && editField.options) {
-      return (
-        <Segmented
-          options={editField.options}
-          value={editValue}
-          onChange={setEditValue}
-        />
-      );
-    }
-    if (editField.type === 'switch') {
-      return (
-        <div style={{ textAlign: 'center', margin: '16px 0' }}>
-          <Switch checked={!!editValue} onChange={val => setEditValue(val)} />
-        </div>
-      );
-    }
-    // 其他类型可扩展
-    return null;
   };
 
   return (
@@ -213,9 +244,20 @@ function PersonalInfo() {
           title={editField?.label}
           closeOnMaskClick={!loading}
           onClose={() => !loading && setEditField(null)}
-          confirmText="保存"
-          onConfirm={handleSave}
-          confirmLoading={loading}
+          actions={[
+            {
+              key: 'confirm',
+              text: '确认',
+              disabled: loading,
+              onClick: handleSave,
+            },
+          ]}
+          style={{
+            borderRadius: 'var(--radius-lg)',
+            boxShadow: 'var(--shadow-card)',
+            backgroundColor: 'var(--color-bg)',
+            color: 'var(--color-text)'
+          }}
         />
       </div>
     </SubLayout>
