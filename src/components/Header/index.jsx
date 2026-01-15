@@ -11,12 +11,13 @@ import './index.css';
  * @param {React.ReactNode[]} rightActions - 右侧操作区
  * @param {React.ReactNode} children - 额外内容
  */
-const Header = ({ title, subtitle, showBack = false, rightActions, children }) => {
+const Header = ({ title, subtitle, showBack = false, rightActions, children, onBack }) => {
   return (
     <header className="yh-header">
       <NavBar
         back={showBack ? '返回' : null}
         right={rightActions}
+        onBack={onBack}
         style={{
           background: 'var(--header-bg)',
           color: 'var(--header-color)',
@@ -40,6 +41,7 @@ Header.propTypes = {
   showBack: PropTypes.bool,
   rightActions: PropTypes.node,
   children: PropTypes.node,
+  onBack: PropTypes.func,
 };
 
 export default Header;

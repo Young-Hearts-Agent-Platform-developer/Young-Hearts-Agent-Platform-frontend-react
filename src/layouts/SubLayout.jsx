@@ -19,7 +19,7 @@ const SubLayout = ({ title, subtitle, rightActions, children, onBack }) => {
         subtitle={subtitle}
         showBack
         rightActions={rightActions}
-        back={handleBack}
+        onBack={handleBack}
       />
       <main style={{ flex: 1, width: '100%' }}>{children}</main>
     </div>
