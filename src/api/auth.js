@@ -75,7 +75,7 @@ export async function getCurrentUser() {
   // ===============================
   // MOCK 用户，仅开发环境使用，勿提交生产！
   // ===============================
-  if (import.meta.env.MODE === 'development') {
+  if (import.meta.env.VITE_MODE === 'development') {
     // 直接返回 MOCK_USER，结构与 User 类型一致
     return { user: { ...MOCK_USER } };
   }
@@ -87,7 +87,7 @@ export async function getCurrentUser() {
 }
 
 export async function login({ username, password }) {
-  if (import.meta.env.MODE === 'development') {
+  if (import.meta.env.VITE_MODE === 'development') {
     // mock 登录，直接返回 user 信息，结构与 User 类型一致
     return {
       user: { ...MOCK_USER },
@@ -107,7 +107,7 @@ export async function login({ username, password }) {
 }
 
 export async function logout() {
-  if (import.meta.env.MODE === 'development') {
+  if (import.meta.env.VITE_MODE === 'development') {
     // mock 登出，返回成功
     return { success: true };
   }
