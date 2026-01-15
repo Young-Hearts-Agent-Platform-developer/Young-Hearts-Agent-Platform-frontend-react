@@ -1,9 +1,14 @@
+
 import React, { createContext, useState, useEffect, useCallback } from 'react';
 import { getCurrentUser, login as apiLogin, logout as apiLogout } from '../api/auth';
+/**
+ * @typedef {import('../types/User').User} User
+ */
 
 const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
+  /** @type {[User|null, Function]} */
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -12,8 +17,10 @@ export const UserProvider = ({ children }) => {
     setLoading(true);
     try {
       const res = await getCurrentUser();
-      setUser(res.user || null);
-      console.log('当前用户信息：', res.user);
+      /** @type {User|null} */
+      const userData = res.user || null;
+      setUser(userData);
+      console.log('当前用户信息：', userData);
     } catch {
       setUser(null);
     } finally {

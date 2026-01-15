@@ -104,16 +104,14 @@ function PersonalInfo() {
     );
   }
 
-  // 判断扩展信息分组（兼容 roles 为字符串或数组，便于后续扩展更多身份）
+  // 动态分组渲染，自动适配所有 roles
   const rolesArr = Array.isArray(user.roles)
     ? user.roles
     : typeof user.roles === 'string'
       ? [user.roles]
       : [];
-  const isVolunteer = rolesArr.includes('volunteer');
-  const isExpert = rolesArr.includes('expert');
 
-  // 动态分组渲染，便于后续扩展更多身份类型
+  // 基础信息分组
   const groups = [
     {
       title: '基础信息',
@@ -121,24 +119,22 @@ function PersonalInfo() {
       data: user,
       groupKey: 'user',
     },
-    // 可扩展更多分组
-    ...(isVolunteer && user.volunteer_profile
-      ? [{
-          title: '志愿者信息',
-          fields: volunteerFields,
-          data: user.volunteer_profile,
-          groupKey: 'volunteer_profile',
-        }]
-      : []),
-    ...(isExpert && user.expert_profile
-      ? [{
-          title: '专家信息',
-          fields: expertFields,
-          data: user.expert_profile,
-          groupKey: 'expert_profile',
-        }]
-      : []),
-    // 预留：如有更多身份类型，可在此扩展
+    // 动态扩展所有角色 profile 字段
+    ...rolesArr.map((role) => {
+      if (!role || role === 'user') return null;
+      const profileKey = `${role}_profile`;
+      // 角色字段映射
+      let fields = null;
+      if (role === 'volunteer') fields = volunteerFields;
+      else if (role === 'expert') fields = expertFields;
+      // 未来扩展角色可自定义 fields，否则降级为通用渲染
+      return {
+        title: `${role} 详细信息`,
+        fields,
+        data: user[profileKey],
+        groupKey: profileKey,
+      };
+    }).filter(Boolean)
   ];
 
   // 处理字段点击
@@ -230,18 +226,31 @@ function PersonalInfo() {
         {groups.map((group) => (
           <div key={group.title} style={{ margin: '16px 0' }}>
             <div style={{ fontWeight: 600, fontSize: 16, padding: '8px 16px' }}>{group.title}</div>
-            <ListMenu
-              items={group.fields.map((field) => ({
-                key: field.key,
-                label: field.label,
-                value: field.render ? field.render(group.data) : (group.data[field.key] ?? '-'),
-                arrow: field.key === 'avatar' ? false : field.editable,
-                onClick: field.key === 'avatar'
-                  ? () => Dialog.alert({ content: '暂不支持头像修改' })
-                  : () => handleFieldClick(field, group.data[field.key], group),
-              }))}
+            {group.fields ? (
+              <ListMenu
+                items={group.fields.map((field) => ({
+                  key: field.key,
+                  label: field.label,
+                  value: field.render ? field.render(group.data) : (group.data?.[field.key] ?? '-') ,
+                  arrow: field.key === 'avatar' ? false : field.editable,
+                  onClick: field.key === 'avatar'
+                    ? () => Dialog.alert({ content: '暂不支持头像修改' })
+                    : () => handleFieldClick(field, group.data?.[field.key], group),
+                }))}
                 align="split"
-            />
+              />
+            ) : (
+              group.data ? (
+                // 通用渲染未知 profile 字段
+                <ul style={{ padding: '8px 16px' }}>
+                  {Object.entries(group.data).map(([k, v]) => (
+                    <li key={k}><strong>{k}：</strong>{String(v)}</li>
+                  ))}
+                </ul>
+              ) : (
+                <div style={{ color: '#999', padding: '8px 16px' }}>暂无该角色详细信息</div>
+              )
+            )}
           </div>
         ))}
         <Popup

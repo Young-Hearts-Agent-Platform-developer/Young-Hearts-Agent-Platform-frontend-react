@@ -1,10 +1,10 @@
 // 预留邮箱验证接口（Phase 3 邮箱字段编辑弹窗用）
 // 用法示例：await sendEmailVerification(email)
-export async function sendEmailVerification(email) {
-  // TODO: 实现邮箱验证API调用
-  // return await fetch('/api/auth/verify-email', { method: 'POST', body: JSON.stringify({ email }) })
-  return Promise.resolve(); // 占位
-}
+// export async function sendEmailVerification(email) {
+//   // TODO: 实现邮箱验证API调用
+//   // return await fetch('/api/auth/verify-email', { method: 'POST', body: JSON.stringify({ email }) })
+//   return Promise.resolve(); // 占位
+// }
 // 用户信息更新接口（Phase 3）
 export async function updateUserProfile(data) {
   // 真实环境应为 /api/users/profile
@@ -29,39 +29,43 @@ export async function updateUserProfile(data) {
 export const MOCK_USER = {
   id: 0,
   username: 'dev-user',
-  gender: 'male', // 新增字段
+  gender: 'male',
   email: 'devuser@younghearts.com',
-  password_hash: 'mocked_hash',
   nickname: '心青年开发者',
   avatar: '/src/assets/user.png',
-  roles: ['volunteer'],
+  roles: ['volunteer', 'expert', 'future_role'],
   status: 'active',
   created_at: '2026-01-01T00:00:00Z',
-  // VolunteerProfile 示例扩展字段
-  volunteerProfile: {
+  volunteer_profile: {
     user_id: 0,
-    full_name: '开发者志愿者',
+    full_name: '张志愿',
     phone: '13800000000',
     public_email: 'volunteer@younghearts.com',
     is_public_visible: true,
-    service_hours: 12.5,
-    skills: ['陪伴', '心理疏导'],
+    service_hours: 120,
+    skills: ['心理陪伴', '活动组织'],
     status: 'approved',
     work_status: 'online',
+    bio: '热心志愿者',
   },
-  // ExpertProfile 示例扩展字段
-  expertProfile: {
+  expert_profile: {
     user_id: 0,
-    full_name: '开发者专家',
+    full_name: '李专家',
     title: '心理咨询师',
     organization: '心青年研究院',
-    qualifications: ['https://example.com/cert1.png'],
-    specialties: ['心理健康', '家庭关系'],
-    phone: '13800000001',
+    qualifications: ['https://cert.example.com/abc.pdf'],
+    specialties: ['青少年心理', '危机干预'],
+    phone: '13900000000',
     public_email: 'expert@younghearts.com',
-    is_public_visible: false,
+    is_public_visible: true,
     status: 'approved',
+    bio: '专注心理健康研究',
   },
+  future_role_profile: {
+    user_id: 0,
+    custom_field: '自定义扩展',
+    status: 'pending',
+  }
 };
 
 const API_BASE = '/api/auth';
@@ -72,34 +76,8 @@ export async function getCurrentUser() {
   // MOCK 用户，仅开发环境使用，勿提交生产！
   // ===============================
   if (import.meta.env.MODE === 'development') {
-    // Phase 2: 开发环境下直接返回 MOCK_USER
-    // 返回结构与 /api/auth/me 保持一致，包含 user、roles、profile概要
-    const { roles, volunteerProfile, expertProfile, ...baseUser } = MOCK_USER;
-    // 只返回概要 profile 字段（如有）
-    return {
-      user: {
-        ...baseUser,
-        roles,
-      },
-      volunteerProfile: volunteerProfile ? {
-        user_id: volunteerProfile.user_id,
-        full_name: volunteerProfile.full_name,
-        is_public_visible: volunteerProfile.is_public_visible,
-        service_hours: volunteerProfile.service_hours,
-        skills: volunteerProfile.skills,
-        status: volunteerProfile.status,
-        work_status: volunteerProfile.work_status,
-      } : undefined,
-      expertProfile: expertProfile ? {
-        user_id: expertProfile.user_id,
-        full_name: expertProfile.full_name,
-        title: expertProfile.title,
-        organization: expertProfile.organization,
-        specialties: expertProfile.specialties,
-        is_public_visible: expertProfile.is_public_visible,
-        status: expertProfile.status,
-      } : undefined,
-    };
+    // 直接返回 MOCK_USER，结构与 User 类型一致
+    return { user: { ...MOCK_USER } };
   }
   const res = await fetch(`${API_BASE}/me`, {
     credentials: 'include',
@@ -110,9 +88,9 @@ export async function getCurrentUser() {
 
 export async function login({ username, password }) {
   if (import.meta.env.MODE === 'development') {
-    // mock 登录，直接返回 user 信息
+    // mock 登录，直接返回 user 信息，结构与 User 类型一致
     return {
-      user: MOCK_USER,
+      user: { ...MOCK_USER },
       token: 'mocked_token',
     };
   }
