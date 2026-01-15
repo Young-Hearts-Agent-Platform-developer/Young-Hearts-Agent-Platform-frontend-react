@@ -2,10 +2,28 @@ import React, { useContext, useState } from 'react';
 import { ListMenu } from '../../components/ListMenu';
 import { UserContext } from '../../store/UserContext';
 import defaultAvatar from '../../assets/user.png';
-import { Toast, Button, Modal, Input, Switch, Segmented, Dialog } from 'antd-mobile';
+import { Toast, Button, Dialog, Popup } from 'antd-mobile';
+import FieldEditor from '../../components/FieldEditor';
+import './PersonalInfo.css';
 
 import { useNavigate } from 'react-router-dom';
 import SubLayout from '../../layouts/SubLayout';
+
+// 校验函数集合
+const validators = {
+  required: (val) => (!val || val.trim() === '' ? '该项不能为空' : null),
+  email: (val) => {
+    if (!val) return null; // 非必填时允许为空
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return !emailRegex.test(val) ? '邮箱格式不正确' : null;
+  },
+  // 组合校验器：必填且格式正确
+  requiredEmail: (val) => {
+    if (!val || val.trim() === '') return '邮箱不能为空';
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return !emailRegex.test(val) ? '邮箱格式不正确' : null;
+  }
+};
 
 // 字段分组配置
 const baseFields = [
@@ -24,39 +42,43 @@ const baseFields = [
     editable: false,
   },
   // type 可扩展为 'input' | 'segmented' | 'switch' | 'multi-select' | 'date' | 'verify' 等
-  { key: 'nickname', label: '昵称', editable: true, type: 'input' },
-  { key: 'gender', label: '性别', editable: true, type: 'segmented', options: [
-    { label: '男', value: 'male' },
-    { label: '女', value: 'female' },
-    { label: '保密', value: 'unknown' },
-  ] },
+  { key: 'nickname', label: '昵称', editable: true, type: 'input', validator: validators.required },
+  { key: 'gender', label: '性别', editable: true, type: 'segmented', config: {
+    options: [
+      { label: '男', value: 'male' },
+      { label: '女', value: 'female' },
+      { label: '保密', value: 'unknown' },
+    ]
+  } },
   { key: 'public_email', label: '公开邮箱', editable: true, type: 'input',
     // type: 'verify' 可用于邮箱验证，verify: true 预留
-    verify: true },
+    verify: true, validator: validators.email },
   { key: 'status', label: '状态', editable: false },
   { key: 'roles', label: '角色', editable: false, render: (user) => (Array.isArray(user.roles) ? user.roles.join('、') : user.roles) },
   { key: 'created_at', label: '注册时间', editable: false },
 ];
 
 const volunteerFields = [
-  { key: 'public_email', label: '公开邮箱', editable: true, type: 'input', verify: true }, // type: 'verify' 可扩展
+  { key: 'public_email', label: '公开邮箱', editable: true, type: 'input', verify: true, validator: validators.email }, // type: 'verify' 可扩展
   { key: 'is_public_visible', label: '是否公开', editable: true, type: 'switch' },
   { key: 'skills', label: '擅长领域', editable: true, type: 'input' }, // type: 'multi-select' 可扩展
   { key: 'service_hours', label: '服务时长', editable: false },
-  { key: 'work_status', label: '服务状态', editable: true, type: 'segmented', options: [
-    { label: '在线', value: 'online' },
-    { label: '忙碌', value: 'busy' },
-    { label: '离线', value: 'offline' },
-  ] },
+  { key: 'work_status', label: '服务状态', editable: true, type: 'segmented', config: {
+    options: [
+      { label: '在线', value: 'online' },
+      { label: '忙碌', value: 'busy' },
+      { label: '离线', value: 'offline' },
+    ]
+  } },
   { key: 'status', label: '审核状态', editable: false },
 ];
 
 const expertFields = [
-  { key: 'public_email', label: '公开邮箱', editable: true, type: 'input', verify: true }, // type: 'verify' 可扩展
+  { key: 'public_email', label: '公开邮箱', editable: true, type: 'input', verify: true, validator: validators.email }, // type: 'verify' 可扩展
   { key: 'is_public_visible', label: '是否公开', editable: true, type: 'switch' },
-  { key: 'title', label: '头衔', editable: true, type: 'input' },
-  { key: 'organization', label: '组织', editable: true, type: 'input' },
-  { key: 'specialties', label: '擅长领域', editable: true, type: 'input' },
+  { key: 'title', label: '头衔', editable: true, type: 'input', validator: validators.required },
+  { key: 'organization', label: '组织', editable: true, type: 'input', validator: validators.required },
+  { key: 'specialties', label: '擅长领域', editable: true, type: 'input', validator: validators.required },
   { key: 'status', label: '审核状态', editable: false },
 ];
 
@@ -68,6 +90,7 @@ function PersonalInfo() {
   const navigate = useNavigate();
   const [editField, setEditField] = useState(null); // { field, value, group }
   const [editValue, setEditValue] = useState('');
+  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   if (!user) {
@@ -127,11 +150,34 @@ function PersonalInfo() {
     if (!field.editable) return;
     setEditField({ ...field, group });
     setEditValue(value);
+    setError('');
+  };
+
+  // 处理值变更
+  const handleValueChange = (val) => {
+    setEditValue(val);
+    if (editField && editField.validator) {
+      const msg = editField.validator(val);
+      setError(msg || '');
+    } else {
+      setError('');
+    }
   };
 
   // 弹窗保存
   const handleSave = async () => {
     if (!editField) return;
+    
+    // 再次校验（防止用户未修改直接保存，或者实时校验有延迟）
+    if (editField.validator) {
+      const msg = editField.validator(editValue);
+      if (msg) {
+        setError(msg);
+        return;
+      }
+    }
+    if (error) return; // 如果还有错误未解决
+
     setLoading(true);
     try {
       // 构造 payload
@@ -156,66 +202,26 @@ function PersonalInfo() {
     }
   };
 
-  // 弹窗渲染控件
+  // 使用 FieldEditor 渲染编辑控件
   const renderEditInput = () => {
     if (!editField) return null;
-    switch (editField.type) {
-      case 'input':
-        return (
-          <Input
-            value={editValue}
-            onChange={val => setEditValue(val)}
-            placeholder={`请输入${editField.label}`}
-          />
-        );
-      case 'segmented':
-        if (editField.options) {
-          return (
-            <Segmented
-              options={editField.options}
-              value={editValue}
-              onChange={setEditValue}
-            />
-          );
-        }
-        break;
-      case 'switch':
-        return (
-          <div style={{ textAlign: 'center', margin: '16px 0' }}>
-            <Switch checked={!!editValue} onChange={val => setEditValue(val)} />
-          </div>
-        );
-      // 预留：多选控件
-      case 'multi-select':
-        // TODO: 后续支持多选控件
-        return (
-          <div style={{ color: '#ccc', textAlign: 'center', padding: '16px' }}>
-            暂未支持多选类型
-          </div>
-        );
-      // 预留：日期控件
-      case 'date':
-        // TODO: 后续支持日期控件
-        return (
-          <div style={{ color: '#ccc', textAlign: 'center', padding: '16px' }}>
-            暂未支持日期类型
-          </div>
-        );
-      // 预留：邮箱验证控件
-      case 'verify':
-        // TODO: 后续支持邮箱验证控件
-        return (
-          <div style={{ color: '#ccc', textAlign: 'center', padding: '16px' }}>
-            暂未支持邮箱验证类型
-          </div>
-        );
-      default:
-        return (
-          <div style={{ color: '#ccc', textAlign: 'center', padding: '16px' }}>
-            暂不支持该字段类型
-          </div>
-        );
+    
+    const { type, label, config = {} } = editField;
+    const finalConfig = { ...config };
+
+    if (type === 'input' && !finalConfig.placeholder) {
+      finalConfig.placeholder = `请输入${label}`;
     }
+    
+    return (
+      <FieldEditor
+        type={type}
+        config={finalConfig}
+        value={editValue}
+        onChange={handleValueChange}
+        error={error}
+      />
+    );
   };
 
   return (
@@ -238,27 +244,33 @@ function PersonalInfo() {
             />
           </div>
         ))}
-        <Modal
+        <Popup
           visible={!!editField}
-          content={renderEditInput()}
-          title={editField?.label}
-          closeOnMaskClick={!loading}
-          onClose={() => !loading && setEditField(null)}
-          actions={[
-            {
-              key: 'confirm',
-              text: '确认',
-              disabled: loading,
-              onClick: handleSave,
-            },
-          ]}
-          style={{
-            borderRadius: 'var(--radius-lg)',
-            boxShadow: 'var(--shadow-card)',
-            backgroundColor: 'var(--color-bg)',
-            color: 'var(--color-text)'
-          }}
-        />
+          onMaskClick={() => !loading && setEditField(null)}
+          bodyStyle={{ borderTopLeftRadius: '12px', borderTopRightRadius: '12px' }}
+        >
+          <div className="popup-container">
+            <div className="popup-header">
+              <button
+                className="popup-action cancel"
+                onClick={() => !loading && setEditField(null)}
+              >
+                取消
+              </button>
+              <div className="popup-title">{editField?.label}</div>
+              <button
+                className="popup-action"
+                onClick={handleSave}
+                disabled={loading}
+              >
+                保存
+              </button>
+            </div>
+            <div className="popup-body">
+              {renderEditInput()}
+            </div>
+          </div>
+        </Popup>
       </div>
     </SubLayout>
   );
