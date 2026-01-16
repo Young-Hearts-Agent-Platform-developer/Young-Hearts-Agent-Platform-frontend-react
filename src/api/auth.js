@@ -61,11 +61,6 @@ export const MOCK_USER = {
     status: 'approved',
     bio: '专注心理健康研究',
   },
-  future_role_profile: {
-    user_id: 0,
-    custom_field: '自定义扩展',
-    status: 'pending',
-  }
 };
 
 const API_BASE = '/api/auth';
@@ -94,16 +89,35 @@ export async function login({ username, password }) {
       token: 'mocked_token',
     };
   }
-  const res = await fetch(`${API_BASE}/login`, {
-    method: 'POST',
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ username, password }),
-  });
-  if (!res.ok) throw new Error('登录失败');
-  return await res.json();
+  const isMock = import.meta.env.MODE === 'development';
+  if (isMock) {
+    // mock 登录
+    if (username === 'test' && password === '123456') {
+      return { token: 'mock-token', user: { username: 'test', name: '测试用户' } };
+    } else {
+      // 模拟延迟
+      await new Promise(r => setTimeout(r, 300));
+      throw new Error('用户名或密码错误');
+    }
+  }
+  // 真实 API
+  try {
+    const res = await fetch(`${API_BASE}/login`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ username, password })
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.message || '登录失败');
+    }
+    return await res.json();
+  } catch (err) {
+    throw new Error(err.message || '网络错误');
+  }
 }
 
 export async function logout() {

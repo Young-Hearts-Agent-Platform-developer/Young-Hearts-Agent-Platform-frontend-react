@@ -34,8 +34,14 @@ export const UserProvider = ({ children }) => {
 
   // 登录
   const login = async (credentials) => {
-    await apiLogin(credentials);
-    await fetchUser();
+    try {
+      await apiLogin(credentials);
+      await fetchUser();
+      return true;
+    } catch (err) {
+      // 可选：可在此处 setUser(null)
+      return err?.message || '登录失败';
+    }
   };
 
   // 登出

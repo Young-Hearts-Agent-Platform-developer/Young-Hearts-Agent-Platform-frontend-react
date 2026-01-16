@@ -23,7 +23,7 @@ const MyPage = () => {
           if (user) {
             navigate('/my/personal-info');
           } else {
-            // 可选：未登录时可弹出提示或跳转登录
+            navigate('/auth/login');
           }
         }}
       >
