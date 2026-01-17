@@ -3,7 +3,11 @@ import React, { createContext, useState, useEffect, useCallback } from 'react';
 import { getCurrentUser, login as apiLogin, logout as apiLogout } from '../api/auth';
 /**
  * @typedef {import('../types/User').User} User
- */
+*/
+
+
+
+// 如需判断角色激活状态，请从 src/store/roleUtils.js 导入 isRoleInactive
 
 const UserContext = createContext();
 
