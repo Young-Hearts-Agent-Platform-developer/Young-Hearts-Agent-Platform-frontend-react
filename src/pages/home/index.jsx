@@ -25,8 +25,8 @@ export default function HomePage() {
   const [error] = useState(false);
   const [empty] = useState(false);
 
-  // 统一服务中心分区角色控制：仅非家属可见
-  const isFamily = user?.roles?.includes('family');
+  // 统一服务中心分区角色控制：仅已登录且身份只包括 family 的用户不可见
+  const isOnlyFamily = user && Array.isArray(user.roles) && user.roles.length === 1 && user.roles[0] === 'family';
   // 卡片角色配置
   const serviceCenterCards = [
     {
@@ -192,38 +192,38 @@ export default function HomePage() {
             </div>
           </div>
         </SectionContainer>
-        {/* 统一服务中心分区：仅非家属可见 */}
-        {!isFamily && (
-            <SectionContainer title="统一服务中心" className="service-center-section">
-              {serviceCenterCards.map(block => {
-                // 过滤出当前 block 可见的卡片
-                const visibleCards = block.cards.filter(card => {
-                  if (!card.allowedRoles || !user?.roles) return false;
-                  return card.allowedRoles.some(role => user.roles.includes(role));
-                });
-                // 若无可见卡片，则不渲染该 block
-                if (visibleCards.length === 0) return null;
-                return (
-                  <div className="service-block" style={{ marginBottom: 24 }} key={block.block}>
-                    <div className="service-block-title" style={{ fontWeight: 600, fontSize: 18, marginBottom: 12 }}>{block.block}</div>
-                    <div style={{ display: 'flex', gap: 16 }}>
-                      {visibleCards.map(card => (
-                        <Card
-                          key={card.title}
-                          type="sub"
-                          icon={card.icon}
-                          title={card.title}
-                          subtitle={card.subtitle}
-                          aria-label={card.title}
-                          tabIndex={0}
-                          onClick={card.onClick}
-                        />
-                      ))}
-                    </div>
+        {/* 统一服务中心分区：仅已登录且身份不为仅 family 可见 */}
+        {user && !isOnlyFamily && (
+          <SectionContainer title="统一服务中心" className="service-center-section">
+            {serviceCenterCards.map(block => {
+              // 过滤出当前 block 可见的卡片
+              const visibleCards = block.cards.filter(card => {
+                if (!card.allowedRoles || !user?.roles) return false;
+                return card.allowedRoles.some(role => user.roles.includes(role));
+              });
+              // 若无可见卡片，则不渲染该 block
+              if (visibleCards.length === 0) return null;
+              return (
+                <div className="service-block" style={{ marginBottom: 24 }} key={block.block}>
+                  <div className="service-block-title" style={{ fontWeight: 600, fontSize: 18, marginBottom: 12 }}>{block.block}</div>
+                  <div style={{ display: 'flex', gap: 16 }}>
+                    {visibleCards.map(card => (
+                      <Card
+                        key={card.title}
+                        type="sub"
+                        icon={card.icon}
+                        title={card.title}
+                        subtitle={card.subtitle}
+                        aria-label={card.title}
+                        tabIndex={0}
+                        onClick={card.onClick}
+                      />
+                    ))}
                   </div>
-                );
-              })}
-            </SectionContainer>
+                </div>
+              );
+            })}
+          </SectionContainer>
         )}
       </div>
     </HomeLayout>
