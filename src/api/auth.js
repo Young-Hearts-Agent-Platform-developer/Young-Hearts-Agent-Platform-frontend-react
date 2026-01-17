@@ -63,7 +63,46 @@ export const MOCK_USER = {
   },
 };
 
+
 const API_BASE = '/api/auth';
+
+/**
+ * 注册新用户
+ * @param {Object} data - 注册信息，字段严格对齐 openapi.json UserRegisterRequest
+ * @returns {Promise<Object>} 后端响应
+ *
+ * data = {
+ *   username: string,
+ *   password: string,
+ *   email?: string,
+ *   gender?: string,
+ *   nickname?: string,
+ *   avatar?: string,
+ *   roles: string[],
+ *   volunteer_info?: object|null,
+ *   expert_info?: object|null
+ * }
+ */
+export async function register(data) {
+  // 真实 API
+  try {
+    const res = await fetch(`${API_BASE}/register`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+      credentials: 'include',
+    });
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      throw new Error(errData.message || '注册失败');
+    }
+    return await res.json();
+  } catch (err) {
+    throw new Error(err.message || '网络错误');
+  }
+}
 
 
 export async function getCurrentUser() {
