@@ -9,6 +9,7 @@ const CommunityPage = lazy(() => import('./pages/community/index.jsx'));
 const PersonalInfoPage = lazy(() => import('./pages/my/PersonalInfo.jsx'));
 
 const LoginPage = lazy(() => import('./pages/auth/login.jsx'));
+const RegisterPage = lazy(() => import('./pages/auth/register.jsx'));
 const MyPage = lazy(() => import('./pages/my/index.jsx'));
 
 function NotFound() {
@@ -43,6 +44,7 @@ function App() {
             <Route path="/my" element={<MyPage />} />
             <Route path="/my/personal-info" element={<PersonalInfoPage />} />
             <Route path="/auth/login" element={<LoginPage />} />
+            <Route path="/auth/register" element={<RegisterPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
