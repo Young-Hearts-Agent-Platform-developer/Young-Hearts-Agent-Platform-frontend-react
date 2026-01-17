@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { ListMenu } from '../../components/ListMenu';
 import { UserContext } from '../../store/UserContext';
-import defaultAvatar from '../../assets/user.png';
+// import defaultAvatar from '../../assets/user.png';
 import { Toast, Button, Dialog, Popup } from 'antd-mobile';
 import FieldEditor from '../../components/FieldEditor';
 import './PersonalInfo.css';
@@ -33,7 +33,7 @@ const baseFields = [
     type: 'avatar',
     render: (user) => (
       <img
-        src={user.avatar || defaultAvatar}
+        src={user.avatar}
         alt="avatar"
         style={{ width: 48, height: 48, borderRadius: '50%' }}
       />
@@ -54,7 +54,7 @@ const baseFields = [
     // type: 'verify' 可用于邮箱验证，verify: true 预留
     verify: true, validator: validators.email },
   { key: 'status', label: '状态', editable: false },
-  { key: 'roles', label: '角色', editable: false, render: (user) => (Array.isArray(user.roles) ? user.roles.join('、') : user.roles) },
+  { key: 'roles', label: '角色', editable: false, render: (user) => user.roles.join('、') },
   { key: 'created_at', label: '注册时间', editable: false },
 ];
 
@@ -105,11 +105,7 @@ function PersonalInfo() {
   }
 
   // 动态分组渲染，自动适配所有 roles
-  const rolesArr = Array.isArray(user.roles)
-    ? user.roles
-    : typeof user.roles === 'string'
-      ? [user.roles]
-      : [];
+  const rolesArr = user.roles;
 
   // 基础信息分组
   const groups = [

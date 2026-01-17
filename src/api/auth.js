@@ -1,3 +1,7 @@
+import { API_BASE_URL } from '../config/apiConfig';
+
+const API_BASE = `${API_BASE_URL}/api/auth`;
+
 // 预留邮箱验证接口（Phase 3 邮箱字段编辑弹窗用）
 // 用法示例：await sendEmailVerification(email)
 // export async function sendEmailVerification(email) {
@@ -6,17 +10,32 @@
 //   return Promise.resolve(); // 占位
 // }
 // 用户信息更新接口（Phase 3）
+/**
+ * 更新当前用户信息（对齐 OpenAPI UserUpdate schema）
+ * @param {Object} data - 用户更新信息，字段严格对齐 openapi.json UserUpdate
+ * 例如：{
+ *   nickname?: string,
+ *   avatar?: string,
+ *   gender?: string,
+ *   email?: string,
+ *   volunteer_profile?: object|null,
+ *   expert_profile?: object|null
+ * }
+ * @returns {Promise<Object>} 后端响应
+ */
 export async function updateUserProfile(data) {
-  // 真实环境应为 /api/users/profile
-  return fetch('/api/users/profile', {
+  // 路径与方法严格对齐 OpenAPI
+  const res = await fetch(`${API_BASE}/me`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
     credentials: 'include',
-  }).then(res => {
-    if (!res.ok) throw new Error('更新失败');
-    return res.json();
   });
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.message || '更新失败');
+  }
+  return await res.json();
 }
 // 鉴权相关 API 封装，所有请求自动携带 Cookie
 
@@ -29,42 +48,46 @@ export async function updateUserProfile(data) {
 export const MOCK_USER = {
   id: 0,
   username: 'dev-user',
-  gender: 'male',
   email: 'devuser@younghearts.com',
+  gender: 'male',
   nickname: '心青年开发者',
   avatar: '/src/assets/user.png',
-  roles: ['volunteer', 'expert', 'future_role'],
+  roles: ['volunteer', 'expert'],
   status: 'active',
-  created_at: '2026-01-01T00:00:00Z',
+  is_active: true, // OpenAPI 字段
+  is_superuser: false, // OpenAPI 字段
+  // 前端独有字段（文档缺失）
+  created_at: '2026-01-01T00:00:00Z', // 前端独有/文档缺失
   volunteer_profile: {
     user_id: 0,
     full_name: '张志愿',
     phone: '13800000000',
     public_email: 'volunteer@younghearts.com',
     is_public_visible: true,
-    service_hours: 120,
     skills: ['心理陪伴', '活动组织'],
+    service_hours: 120, // 前端独有/文档缺失
     status: 'approved',
-    work_status: 'online',
-    bio: '热心志愿者',
+    work_status: 'online', // 前端独有/文档缺失
+    bio: '热心志愿者', // 前端独有/文档缺失
   },
   expert_profile: {
     user_id: 0,
     full_name: '李专家',
-    title: '心理咨询师',
-    organization: '心青年研究院',
-    qualifications: ['https://cert.example.com/abc.pdf'],
-    specialties: ['青少年心理', '危机干预'],
     phone: '13900000000',
     public_email: 'expert@younghearts.com',
-    is_public_visible: true,
+    title: '心理咨询师',
+    org: '心青年研究院',
+    skills: ['青少年心理', '危机干预'],
     status: 'approved',
-    bio: '专注心理健康研究',
+    // 前端独有字段
+    qualifications: ['https://cert.example.com/abc.pdf'], // 前端独有/文档缺失
+    specialties: ['青少年心理', '危机干预'], // 前端独有/文档缺失
+    bio: '专注心理健康研究', // 前端独有/文档缺失
   },
 };
 
 
-const API_BASE = '/api/auth';
+
 
 /**
  * 注册新用户
@@ -111,7 +134,7 @@ export async function getCurrentUser() {
   // ===============================
   if (import.meta.env.VITE_MODE === 'development') {
     // 直接返回 MOCK_USER，结构与 User 类型一致
-    return { user: { ...MOCK_USER } };
+    return MOCK_USER;
   }
   const res = await fetch(`${API_BASE}/me`, {
     credentials: 'include',
@@ -121,24 +144,6 @@ export async function getCurrentUser() {
 }
 
 export async function login({ username, password }) {
-  if (import.meta.env.VITE_MODE === 'development') {
-    // mock 登录，直接返回 user 信息，结构与 User 类型一致
-    return {
-      user: { ...MOCK_USER },
-      token: 'mocked_token',
-    };
-  }
-  const isMock = import.meta.env.MODE === 'development';
-  if (isMock) {
-    // mock 登录
-    if (username === 'test' && password === '123456') {
-      return { token: 'mock-token', user: { username: 'test', name: '测试用户' } };
-    } else {
-      // 模拟延迟
-      await new Promise(r => setTimeout(r, 300));
-      throw new Error('用户名或密码错误');
-    }
-  }
   // 真实 API
   try {
     const res = await fetch(`${API_BASE}/login`, {

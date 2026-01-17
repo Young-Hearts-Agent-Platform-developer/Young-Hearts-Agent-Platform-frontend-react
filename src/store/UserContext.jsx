@@ -1,6 +1,7 @@
 
 import React, { createContext, useState, useEffect, useCallback } from 'react';
 import { getCurrentUser, login as apiLogin, logout as apiLogout } from '../api/auth';
+import userAvatar from '../assets/user.png'; // 默认头像路径，已存在
 /**
  * @typedef {import('../types/User').User} User
 */
@@ -16,15 +17,27 @@ export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+
+  // 兜底处理函数
+  function normalizeUser(rawUser) {
+    if (!rawUser || !Array.isArray(rawUser.roles) || rawUser.roles.length === 0) return null;
+    return {
+      ...rawUser,
+      avatar: rawUser.avatar || userAvatar,
+      nickname: rawUser.nickname || rawUser.username,
+    };
+  }
+
   // 拉取当前用户信息
   const fetchUser = useCallback(async () => {
     setLoading(true);
     try {
       const res = await getCurrentUser();
       /** @type {User|null} */
-      const userData = res.user || null;
-      setUser(userData);
-      console.log('当前用户信息：', userData);
+      const userData = res || null;
+      const normalized = normalizeUser(userData);
+      setUser(normalized);
+      console.log('当前用户信息：', normalized);
     } catch {
       setUser(null);
     } finally {

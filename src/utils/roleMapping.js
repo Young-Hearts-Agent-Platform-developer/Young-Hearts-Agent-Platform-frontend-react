@@ -15,7 +15,7 @@ export function getGenderDisplayName(gender) {
 }
 // 角色映射表，根据功能文档定义
 const roleMapping = {
-  'patient_family': '患者家属',
+  'family': '患者家属',
   'volunteer': '志愿者',
   'expert': '专家',
   'admin': '管理员',

@@ -39,7 +39,7 @@ const MyPage = () => {
             {user ? user.nickname : '未登录'}
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-            {(user?.roles || []).map((role, idx) => (
+            {user?.roles.map((role, idx) => (
               <span
                 key={role + idx}
                 style={{
