@@ -15,14 +15,15 @@ const Header = ({ title, subtitle, showBack = false, rightActions, children, onB
   return (
     <header className="yh-header">
       <NavBar
-        back={showBack ? '返回' : null}
+        back={showBack ? true : null}
         right={rightActions}
         onBack={onBack}
         style={{
-          background: 'var(--header-bg)',
-          color: 'var(--header-color)',
-          borderRadius: 'var(--radius-lg)',
-          fontFamily: 'var(--font-family)',
+        //   background: 'var(--header-bg)',
+        //   color: 'var(--header-color)',
+        //   borderRadius: 'var(--radius-lg)',
+        //   fontFamily: 'var(--font-family)',
+          width: '100vw',
         }}
       >
         <div className="yh-header-title">
