@@ -158,10 +158,9 @@ export default function HomePage() {
               icon={<MessageOutline />}
               title="智能体咨询"
               subtitle="与AI智能体对话，获得陪伴与建议"
-              // className="main-card"
               aria-label="智能体咨询"
               tabIndex={0}
-              onClick={() => navigate('/consultation')}
+              onClick={() => { navigate('/consultation'); }}
               onKeyDown={e => handleKeyDown(e, '/consultation')}
             />
             <div className="sub-entry-cards" style={{ display: 'flex', gap: 16 }}>

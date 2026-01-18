@@ -17,6 +17,19 @@
   z-index: 100;
 }
 
+/* 右侧操作区靠右对齐 */
+.adm-nav-bar-right {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+.div.adm-nav-bar {
+  position: relative;
+}
+
 /* 预留头部高度 */
 .yh-home-main-scrollable {
   margin-top: var(--header-height);

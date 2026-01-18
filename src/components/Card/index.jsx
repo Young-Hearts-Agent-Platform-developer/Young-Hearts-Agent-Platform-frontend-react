@@ -43,6 +43,7 @@ const Card = ({
       role="region"
       aria-disabled={disabled}
       aria-label={title ? String(title) : undefined}
+      onClick={disabled ? undefined : onClick}
       {...rest}
     >
       {icon && <div className="yh-card__icon" aria-hidden="true">{icon}</div>}
