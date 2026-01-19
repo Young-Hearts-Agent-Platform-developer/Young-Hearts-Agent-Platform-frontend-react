@@ -1,0 +1,43 @@
+.quick-actions-bar {
+  width: 100%;
+  overflow-x: auto;
+  background: #f7f8fa;
+  padding: 8px 0;
+  border-radius: 8px;
+  margin: 8px 0;
+}
+
+.quick-actions-scroll {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 0 12px;
+}
+
+.quick-action-btn {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 15px;
+  color: #333;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+}
+.quick-action-btn:hover {
+  background: #e6f0ff;
+  border-color: #b3d4fc;
+}
+.quick-action-icon {
+  margin-right: 6px;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+}
+.quick-action-label {
+  white-space: nowrap;
+}
