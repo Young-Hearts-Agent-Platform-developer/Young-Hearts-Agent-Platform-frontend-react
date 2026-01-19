@@ -29,11 +29,17 @@ export default function MessageList({ messages }) {
       listRef.current.scrollTop = listRef.current.scrollHeight;
     }
   }, [messages]);
+  // 兼容性检查：确保 messages 为数组
+  const safeMessages = Array.isArray(messages) ? messages : [];
   return (
     <div className="message-list" ref={listRef}>
-      {messages.map((msg, idx) => (
-        <MessageBubble key={idx} message={msg} />
-      ))}
+      {safeMessages.length > 0 ? (
+        safeMessages.map((msg, idx) => (
+          <MessageBubble key={idx} message={msg} />
+        ))
+      ) : (
+        <div className="message-empty">暂无消息</div>
+      )}
     </div>
   );
 }

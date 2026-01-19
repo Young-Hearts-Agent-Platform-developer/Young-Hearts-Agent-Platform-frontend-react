@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import MessageList from './MessageList';
 import InputBar from './InputBar';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import SubLayout from '../../layouts/SubLayout';
 import IconActionButton from '../../components/IconActionButton';
 import { UserOutline } from 'antd-mobile-icons';
+import { getSessionMessages } from '../../api/consult';
 
 const ConsultationPage = () => {
   const navigate = useNavigate();
+  const { id } = useParams(); // 会话唯一标识
 
   // 头部右侧操作区（仅保留转人工）
   const rightActions = (
@@ -19,9 +21,24 @@ const ConsultationPage = () => {
   );
 
   // 消息流状态
-  const [messages, setMessages] = useState([
-    { role: 'ai', content: '您好，请问有什么可以帮您？', time: '09:00' },
-  ]);
+  const [messages, setMessages] = useState([]);
+
+  // 拉取历史消息
+  useEffect(() => {
+    if (!id) return;
+    getSessionMessages(id)
+      .then(res => {
+        if (Array.isArray(res)) {
+          setMessages(res);
+        } else if (res && Array.isArray(res.messages)) {
+          setMessages(res.messages);
+        }
+      })
+      .catch(err => {
+        // 可选：错误处理
+        console.error('加载历史消息失败', err);
+      });
+  }, [id]);
 
   // 发送消息
   const handleSend = (content) => {

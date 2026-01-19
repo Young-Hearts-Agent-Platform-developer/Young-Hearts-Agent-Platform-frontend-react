@@ -40,7 +40,7 @@ const HistoryPage = () => {
 
   // 会话详情仅通过 id 跳转
   const handleSessionClick = (id) => {
-    navigate(`/consultation/chat/${id}`);
+    goToSession(id);
   };
 
   return (
