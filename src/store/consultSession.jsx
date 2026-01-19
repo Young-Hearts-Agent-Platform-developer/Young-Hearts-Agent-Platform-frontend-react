@@ -10,12 +10,18 @@ export function ConsultSessionProvider({ children }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // 只处理标准结构 res.sessions
+  // 只处理标准结构 res.sessions，全部以 id 字段为主
   const loadSessions = async () => {
     setLoading(true);
     try {
       const res = await getSessions();
-      const list = res && Array.isArray(res.sessions) ? res.sessions : [];
+      // 兼容 res 直接为数组 或 res.sessions 为数组
+      let list = [];
+      if (Array.isArray(res)) {
+        list = res;
+      } else if (res && Array.isArray(res.sessions)) {
+        list = res.sessions;
+      }
       setSessions(list);
       setError(null);
     } catch (e) {

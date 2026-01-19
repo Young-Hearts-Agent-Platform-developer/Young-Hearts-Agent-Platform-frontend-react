@@ -4,8 +4,7 @@ import InputBar from './InputBar';
 import { useNavigate } from 'react-router-dom';
 import SubLayout from '../../layouts/SubLayout';
 import IconActionButton from '../../components/IconActionButton';
-// Vant React Icons 示例（如未安装请后续补充）
-import { MessageOutline, UserOutline } from 'antd-mobile-icons';
+import { UserOutline } from 'antd-mobile-icons';
 
 const ConsultationPage = () => {
   const navigate = useNavigate();
@@ -40,15 +39,15 @@ const ConsultationPage = () => {
       onBack={() => navigate(-1)}
       rightActions={rightActions}
       headerStyle={{ position: 'fixed', top: 0, width: '100%', zIndex: 10 }}
-    >
-      {/* 主内容区：消息流与输入区 */}
-      <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', paddingTop: 56 }}>
-        <div style={{ flex: 1, overflow: 'hidden' }}>
-          <MessageList messages={messages} />
+      children={
+        <div style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ flex: 1, overflow: 'hidden' }}>
+            <MessageList messages={messages} />
+          </div>
+          <InputBar onSend={handleSend} />
         </div>
-        <InputBar onSend={handleSend} />
-      </div>
-    </SubLayout>
+      }
+    />
   );
 };
 

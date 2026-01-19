@@ -27,10 +27,10 @@ export default function SessionList({ sessions, loading, error, onSessionClick }
       {list.map((s) => (
         <li
           className="session-list__item"
-          key={s.sessionId}
-          onClick={() => onSessionClick && onSessionClick(s.sessionId)}
+          key={s.id}
+          onClick={() => onSessionClick && onSessionClick(s.id)}
         >
-          <div className="session-list__title">{s.title || '未命名会话'}</div>
+          <div className="session-list__title">{s.title || '新对话'}</div>
           <div className="session-list__meta">
             <span>{s.lastMessage || ''}</span>
             <span className="session-list__date">{s.createdAt ? new Date(s.createdAt).toLocaleString() : ''}</span>

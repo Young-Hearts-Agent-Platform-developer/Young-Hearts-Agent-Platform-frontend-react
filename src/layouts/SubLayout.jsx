@@ -33,7 +33,7 @@ const SubLayout = ({
         style={headerStyle}
         className={headerClassName}
       />
-      <main style={{ flex: 1, width: '100%' }}>{children}</main>
+      <main style={{ flex: 1, width: '100%',  paddingTop: 56 }}>{children}</main>
     </div>
   );
 };
