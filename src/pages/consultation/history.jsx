@@ -3,29 +3,31 @@ import { useNavigate } from 'react-router-dom';
 import SubLayout from '../../layouts/SubLayout';
 import IconActionButton from '../../components/IconActionButton';
 import SessionList from './SessionList';
-// import { getSessions, createSession } from '../../api/consult';
 import { useConsultSession } from '../../store/consultSession.jsx';
 import { UserContext } from '../../store/UserContext';
+import useNewSession from '../../hooks/useNewSession';
 
 const HistoryPage = () => {
-  const { user } = useContext(UserContext) || {};
-  const { sessions, loading, error, loadSessions, newSession } = useConsultSession();
+  const { isAuthenticated, loading: userLoading } = useContext(UserContext) || {};
+  const { sessions, loading, error, loadSessions } = useConsultSession();
   const [localError, setLocalError] = useState(null);
   const navigate = useNavigate();
+  const { createSession } = useNewSession();
 
   useEffect(() => {
-    if (!user) return;
-    loadSessions();
-    // eslint-disable-next-line
-  }, [user]);
-
-  const handleNewSession = async () => {
-    if (!user) {
+    if (userLoading) return;
+    if (!isAuthenticated) {
       navigate('/auth/login');
       return;
     }
+    loadSessions();
+    // eslint-disable-next-line
+  }, [isAuthenticated, userLoading]);
+
+  // 新建会话后仅跳转 sessionId，无需兼容旧结构
+  const handleNewSession = async () => {
     try {
-      const session = await newSession();
+      const session = await createSession();
       if (session && session.sessionId) {
         navigate(`/consultation/chat/${session.sessionId}`);
       }
@@ -34,6 +36,7 @@ const HistoryPage = () => {
     }
   };
 
+  // 会话详情仅通过 sessionId 跳转
   const handleSessionClick = (sessionId) => {
     navigate(`/consultation/chat/${sessionId}`);
   };

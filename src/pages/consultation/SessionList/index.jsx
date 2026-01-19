@@ -14,18 +14,21 @@ export default function SessionList({ sessions, loading, error, onSessionClick }
     return <div className="session-list__loading">加载中...</div>;
   }
   if (error) {
-    return <div className="session-list__error">{error || '加载失败'}</div>;
+    const msg = typeof error === 'string' ? error : '加载失败';
+    return <div className="session-list__error">{msg}</div>;
   }
   if (!sessions || sessions.length === 0) {
     return <div className="session-list__empty">暂无历史会话，快去创建吧！</div>;
   }
+  // 仅使用后端标准字段并限制最多展示 20 条
+  const list = sessions.slice(0, 20);
   return (
     <ul className="session-list">
-      {sessions.map((s) => (
+      {list.map((s) => (
         <li
           className="session-list__item"
-          key={s.sessionId || s.id}
-          onClick={() => onSessionClick && onSessionClick(s)}
+          key={s.sessionId}
+          onClick={() => onSessionClick && onSessionClick(s.sessionId)}
         >
           <div className="session-list__title">{s.title || '未命名会话'}</div>
           <div className="session-list__meta">
