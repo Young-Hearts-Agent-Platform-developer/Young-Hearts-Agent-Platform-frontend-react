@@ -160,8 +160,8 @@ export default function HomePage() {
               subtitle="与AI智能体对话，获得陪伴与建议"
               aria-label="智能体咨询"
               tabIndex={0}
-              onClick={() => { navigate('/consultation'); }}
-              onKeyDown={e => handleKeyDown(e, '/consultation')}
+              onClick={() => { navigate('/consultation/history'); }}
+              onKeyDown={e => handleKeyDown(e, '/consultation/history')}
             />
             <div className="sub-entry-cards" style={{ display: 'flex', gap: 16 }}>
               <div style={{ flex: 1, minWidth: 0 }}>

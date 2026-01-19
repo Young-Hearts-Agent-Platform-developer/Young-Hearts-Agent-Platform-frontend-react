@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import MessageList from '../../components/MessageList';
-import InputBar from '../../components/InputBar';
+import MessageList from './MessageList';
+import InputBar from './InputBar';
 import { useNavigate } from 'react-router-dom';
 import SubLayout from '../../layouts/SubLayout';
 import IconActionButton from '../../components/IconActionButton';
@@ -10,20 +10,13 @@ import { MessageOutline, UserOutline } from 'antd-mobile-icons';
 const ConsultationPage = () => {
   const navigate = useNavigate();
 
-  // 头部右侧操作区
+  // 头部右侧操作区（仅保留转人工）
   const rightActions = (
-    <div style={{ display: 'flex', gap: 12 }}>
-      <IconActionButton
-        icon={<MessageOutline />}
-        ariaLabel="历史会话"
-        onClick={() => navigate('/history-sessions')}
-      />
-      <IconActionButton
-        icon={<UserOutline />}
-        ariaLabel="转人工"
-        onClick={() => navigate('/my/tickets/create')}
-      />
-    </div>
+    <IconActionButton
+      icon={<UserOutline />}
+      ariaLabel="转人工"
+      onClick={() => navigate('/my/tickets/create')}
+    />
   );
 
   // 消息流状态

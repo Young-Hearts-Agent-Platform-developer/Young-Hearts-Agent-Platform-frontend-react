@@ -1,9 +1,10 @@
 import React, { Suspense, lazy, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { UserProvider } from './store/UserContext';
+import { ConsultSessionProvider } from './store/consultSession';
 
 const HomePage = lazy(() => import('./pages/home/index.jsx'));
-const ConsultationPage = lazy(() => import('./pages/consultation/index.jsx'));
+// const ConsultationPage = lazy(() => import('./pages/consultation/index.jsx'));
 const KnowledgePage = lazy(() => import('./pages/knowledge/index.jsx'));
 const CommunityPage = lazy(() => import('./pages/community/index.jsx'));
 const PersonalInfoPage = lazy(() => import('./pages/my/PersonalInfo.jsx'));
@@ -11,6 +12,8 @@ const PersonalInfoPage = lazy(() => import('./pages/my/PersonalInfo.jsx'));
 const LoginPage = lazy(() => import('./pages/auth/login.jsx'));
 const RegisterPage = lazy(() => import('./pages/auth/register.jsx'));
 const MyPage = lazy(() => import('./pages/my/index.jsx'));
+const HistoryPage = lazy(() => import('./pages/consultation/history.jsx'));
+const ChatPage = lazy(() => import('./pages/consultation/chat.jsx'));
 
 function NotFound() {
   return <div style={{ padding: 32, textAlign: 'center' }}>404 Not Found</div>;
@@ -34,20 +37,24 @@ function App() {
   return (
     <BrowserRouter>
       <UserProvider>
-        <Suspense fallback={<div style={{ padding: 32, textAlign: 'center' }}>页面加载中...</div>}>
-          <Routes>
-            <Route path="/" element={<Navigate to="/home" replace />} />
-            <Route path="/home" element={<HomePage />} />
-            <Route path="/consultation" element={<ConsultationPage />} />
-            <Route path="/knowledge" element={<KnowledgePage />} />
-            <Route path="/community" element={<CommunityPage />} />
-            <Route path="/my" element={<MyPage />} />
-            <Route path="/my/personal-info" element={<PersonalInfoPage />} />
-            <Route path="/auth/login" element={<LoginPage />} />
-            <Route path="/auth/register" element={<RegisterPage />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Suspense>
+        <ConsultSessionProvider>
+          <Suspense fallback={<div style={{ padding: 32, textAlign: 'center' }}>页面加载中...</div>}>
+            <Routes>
+              <Route path="/" element={<Navigate to="/home" replace />} />
+              <Route path="/home" element={<HomePage />} />
+              {/* <Route path="/consultation" element={<ConsultationPage />} /> */}
+              <Route path="/knowledge" element={<KnowledgePage />} />
+              <Route path="/community" element={<CommunityPage />} />
+              <Route path="/my" element={<MyPage />} />
+              <Route path="/my/personal-info" element={<PersonalInfoPage />} />
+              <Route path="/auth/login" element={<LoginPage />} />
+              <Route path="/auth/register" element={<RegisterPage />} />
+              <Route path="/consultation/history" element={<HistoryPage />} />
+              <Route path="/consultation/chat/:sessionId" element={<ChatPage />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
+        </ConsultSessionProvider>
       </UserProvider>
     </BrowserRouter>
   );
