@@ -39,6 +39,30 @@ export async function chatSSE(params, { onMessage, onError, onComplete } = {}) {
   const url = `${API_BASE}/chat`;
   let controller = new AbortController();
   let completed = false;
+  // 单行处理逻辑提取为函数
+  function handleLine(line) {
+    if (!line.trim()) return false;
+    if (line.startsWith('[ERROR]')) {
+      if (onError) onError(line.slice(7));
+      if (onMessage) onMessage(line.slice(7), { isError: true });
+      completed = true;
+      if (onComplete) onComplete();
+      controller.abort();
+      return true; // 终止
+    }
+    if (line.startsWith('[TOPIC]')) {
+      if (onMessage) onMessage(line.slice(7), { isTopic: true });
+      return false;
+    }
+    if (line === '[DONE]') {
+      completed = true;
+      if (onComplete) onComplete();
+      controller.abort();
+      return true; // 终止
+    }
+    if (onMessage) onMessage(line, {});
+    return false;
+  }
   try {
     const res = await fetch(url, {
       method: 'POST',
@@ -57,31 +81,21 @@ export async function chatSSE(params, { onMessage, onError, onComplete } = {}) {
       const { done, value } = await reader.read();
       if (done) break;
       buffer += decoder.decode(value, { stream: true });
-      let lines = buffer.split(/\r?\n/);
-      buffer = lines.pop(); // 剩余未处理部分
-      for (let line of lines) {
-        if (!line.trim()) continue;
-        // 处理特殊包
-        if (line.startsWith('[ERROR]')) {
-          if (onError) onError(line.slice(7));
-          if (onMessage) onMessage(line.slice(7), { isError: true });
-          completed = true;
-          if (onComplete) onComplete();
-          controller.abort();
-          return () => controller.abort();
+      // 保留换行符，按每个换行分帧，但不丢弃空行
+      let lines = buffer.split(/(\r?\n)/);
+      let temp = '';
+      for (let i = 0; i < lines.length; i++) {
+        temp += lines[i];
+        if (lines[i] === '\n' || lines[i] === '\r\n') {
+          if (handleLine(temp.replace(/\r?\n$/, ''))) return () => controller.abort();
+          temp = '';
         }
-        if (line.startsWith('[TOPIC]')) {
-          if (onMessage) onMessage(line.slice(7), { isTopic: true });
-          continue;
-        }
-        if (line === '[DONE]') {
-          completed = true;
-          if (onComplete) onComplete();
-          controller.abort();
-          return () => controller.abort();
-        }
-        if (onMessage) onMessage(line, {});
       }
+      buffer = temp;
+    }
+    // 处理流结束后buffer中残留内容
+    if (buffer && !completed) {
+      handleLine(buffer);
     }
     if (!completed && onComplete) onComplete();
   } catch (err) {
