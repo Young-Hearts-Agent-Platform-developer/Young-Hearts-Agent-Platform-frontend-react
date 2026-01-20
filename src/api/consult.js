@@ -26,14 +26,14 @@ export async function getSessionMessages(id) {
 
 /**
  * chatSSE - 基于 fetch+ReadableStream 的 AI 对话流式接口（POST SSE，对齐 openapi）
- * @param {Object} params - 请求参数，结构需与 openapi 对齐（session_id, query, role, reasoning_effort）
+ * @param {import('../types/ChatRequest').ChatRequest} params - 请求参数，结构需与 openapi 对齐（session_id, query, role, reasoning_effort）
  * @param {function} onMessage - 每段消息回调 (data, {isTopic, isError, isDone})
  * @param {function} onError - 错误回调 (error)
  * @param {function} onComplete - 完成回调 ()
  * @returns {Promise<function>} 返回关闭流的函数
  *
  * 用法：
- * chatSSE({ session_id, query, role }, { onMessage, onError, onComplete })
+ * chatSSE({ session_id, query, role, reasoning_effort }, { onMessage, onError, onComplete })
  */
 export async function chatSSE(params, { onMessage, onError, onComplete } = {}) {
   const url = `${API_BASE}/chat`;

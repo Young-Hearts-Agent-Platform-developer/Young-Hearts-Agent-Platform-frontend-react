@@ -57,8 +57,19 @@ const ConsultationPage = () => {
     let aiMsg = { role: 'ai', content: '', time: now.toLocaleTimeString().slice(0,5) };
     setMessages(prev => [...prev, aiMsg]);
     try {
+      /**
+       * @type {import('../../types/ChatRequest').ChatRequest}
+       */
+      const chatParams = {
+        session_id: id,
+        query: content,
+        role: 'counselor',
+        reasoning_effort: null
+      };
+      // 调试用，确保请求体字段齐全
+      console.log('chatSSE params:', chatParams);
       await chatSSE(
-        { session_id: id, query: content },
+        chatParams,
         {
           onMessage: (delta, meta) => {
             aiMsg = { ...aiMsg, content: aiMsg.content + (delta || '') };
