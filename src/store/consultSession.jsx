@@ -44,9 +44,18 @@ export function ConsultSessionProvider({ children }) {
     }
   };
 
+  // 按 sessionId 更新 title，title 为空时兜底为“新对话”
+  const setSessionTitle = (sessionId, title) => {
+    setSessions(prev => prev.map(s =>
+      s.id === sessionId
+        ? { ...s, title: title && title.trim() ? title : '新对话' }
+        : s
+    ));
+  };
+
   // 不依赖用户上下文，只暴露会话相关内容
   return (
-    <ConsultSessionContext.Provider value={{ sessions, loading, error, loadSessions, newSession }}>
+    <ConsultSessionContext.Provider value={{ sessions, loading, error, loadSessions, newSession, setSessionTitle }}>
       {children}
     </ConsultSessionContext.Provider>
   );
@@ -58,4 +67,13 @@ export function useConsultSession() {
     throw new Error('useConsultSession 必须在 ConsultSessionProvider 内使用');
   }
   return context;
+}
+
+// 便于直接调用，无需 useContext
+export function setSessionTitleExternal(setSessions, sessionId, title) {
+  setSessions(prev => prev.map(s =>
+    s.id === sessionId
+      ? { ...s, title: title && title.trim() ? title : '新对话' }
+      : s
+  ));
 }

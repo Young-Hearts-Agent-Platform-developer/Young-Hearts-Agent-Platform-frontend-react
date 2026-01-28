@@ -9,7 +9,7 @@ import './index.css';
  * @param {any} props.error 错误信息
  * @param {Function} props.onSessionClick 点击会话回调
  */
-export default function SessionList({ sessions, loading, error, onSessionClick }) {
+function SessionList({ sessions, loading, error, onSessionClick }) {
   if (loading) {
     return <div className="session-list__loading">加载中...</div>;
   }
@@ -40,3 +40,5 @@ export default function SessionList({ sessions, loading, error, onSessionClick }
     </ul>
   );
 }
+
+export default React.memo(SessionList);

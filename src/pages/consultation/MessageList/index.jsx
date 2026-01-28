@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useLayoutEffect } from 'react';
 import PropTypes from 'prop-types';
 import './index.css';
 
@@ -24,7 +24,8 @@ MessageBubble.propTypes = {
 // 消息流组件
 export default function MessageList({ messages }) {
   const listRef = useRef(null);
-  useEffect(() => {
+  // 使用 useLayoutEffect 保证流式渲染时滚动条及时跟随
+  useLayoutEffect(() => {
     if (listRef.current) {
       listRef.current.scrollTop = listRef.current.scrollHeight;
     }

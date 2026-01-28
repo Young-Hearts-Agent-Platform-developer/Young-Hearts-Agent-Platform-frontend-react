@@ -27,6 +27,9 @@ export async function getSessionMessages(id) {
 /**
  * chatSSE - 基于 fetch+ReadableStream 的 AI 对话流式接口（POST SSE，对齐 openapi）
  * @param {import('../types/ChatRequest').ChatRequest} params - 请求参数，结构需与 openapi 对齐（session_id, query, role, reasoning_effort）
+ *   - session_id: string，必须，当前会话唯一标识，前端 chat 页面通过 useParams() 获取
+ *   - query: string，用户输入内容
+ *   - role, reasoning_effort: 其他参数
  * @param {function} onMessage - 每段消息回调 (data, {isTopic, isError, isDone})
  * @param {function} onError - 错误回调 (error)
  * @param {function} onComplete - 完成回调 ()
@@ -35,6 +38,7 @@ export async function getSessionMessages(id) {
  * 用法：
  * chatSSE({ session_id, query, role, reasoning_effort }, { onMessage, onError, onComplete })
  */
+// session_id 必须由前端页面通过 useParams() 获取并传递
 export async function chatSSE(params, { onMessage, onError, onComplete } = {}) {
   const url = `${API_BASE}/chat`;
   let controller = new AbortController();

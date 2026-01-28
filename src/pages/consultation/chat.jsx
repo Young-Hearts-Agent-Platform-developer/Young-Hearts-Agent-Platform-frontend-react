@@ -8,16 +8,27 @@ import { useNavigate, useParams } from 'react-router-dom';
 import SubLayout from '../../layouts/SubLayout';
 import IconActionButton from '../../components/IconActionButton';
 import { UserOutline } from 'antd-mobile-icons';
-import { getSessionMessages, chatSSE } from '../../api/consult';
+import { getSessionMessages, chatSSE, getSessions } from '../../api/consult';
+import { useConsultSession } from '../../store/consultSession';
 
+
+// Chat 页面主组件
+// session_id 通过 useParams() 获取，id 即为 session_id
 const ConsultationPage = () => {
   const navigate = useNavigate();
-  const { id } = useParams(); // 会话唯一标识
+  const { id } = useParams(); // id 即 session_id
 
   // 弹窗状态
   const [toast, setToast] = useState({ visible: false, message: '' });
   // 消息流状态
   const [messages, setMessages] = useState([]);
+
+  // 副标题状态
+  const [subtitle, setSubtitle] = useState('新对话');
+  // 是否副标题加载失败
+  const [subtitleError, setSubtitleError] = useState(false);
+
+  const { setSessionTitle } = useConsultSession();
 
   // 头部右侧操作区（仅保留转人工）
   const rightActions = (
@@ -45,9 +56,80 @@ const ConsultationPage = () => {
       });
   }, [id]);
 
+  // 拉取会话 topic 作为副标题
+  useEffect(() => {
+    let ignore = false;
+    if (!id) {
+      setSubtitle('新对话');
+      setSubtitleError(false);
+      return;
+    }
+    setSubtitle('新对话');
+    setSubtitleError(false);
+    getSessions()
+      .then(res => {
+        if (ignore) return;
+        if (res && Array.isArray(res.sessions)) {
+          const session = res.sessions.find(s => String(s.id) === String(id));
+          if (session && session.title) {
+            setSubtitle(session.title);
+            setSubtitleError(false);
+          } else {
+            setSubtitle('新对话');
+            setSubtitleError(false);
+          }
+        } else {
+          setSubtitle('加载失败');
+          setSubtitleError(true);
+        }
+      })
+      .catch(() => {
+        if (ignore) return;
+        setSubtitle('加载失败');
+        setSubtitleError(true);
+      });
+    return () => { ignore = true; };
+  }, [id]);
+
 
   // AI 回复流式追加
   const [loading, setLoading] = useState(false);
+  // requestAnimationFrame 节流流式渲染
+  const rafRef = React.useRef();
+  const aiMsgRef = React.useRef(null);
+  const [pendingDelta, setPendingDelta] = useState("");
+
+  const flushAIMsg = React.useCallback(() => {
+    setMessages(prev => {
+      const copy = [...prev];
+      if (aiMsgRef.current && copy.length > 0) {
+        copy[copy.length - 1] = { ...aiMsgRef.current };
+      }
+      return copy;
+    });
+    rafRef.current = null;
+  }, []);
+
+  useEffect(() => {
+    if (pendingDelta) {
+      if (!rafRef.current) {
+        rafRef.current = requestAnimationFrame(() => {
+          flushAIMsg();
+          setPendingDelta("");
+        });
+      }
+    }
+    return () => {
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
+      }
+    };
+  }, [pendingDelta, flushAIMsg]);
+
+  // ...existing code...
+  // 发送消息时调用 chatSSE，需确保参数中包含 session_id
+  // session_id 由 useParams() 获取的 id 传递
   const handleSend = async (content) => {
     if (!content) return;
     setLoading(true);
@@ -55,13 +137,14 @@ const ConsultationPage = () => {
     const userMsg = { role: 'user', content, time: now.toLocaleTimeString().slice(0,5) };
     setMessages(prev => [...prev, userMsg]);
     let aiMsg = { role: 'ai', content: '', time: now.toLocaleTimeString().slice(0,5) };
+    aiMsgRef.current = aiMsg;
     setMessages(prev => [...prev, aiMsg]);
     try {
       /**
        * @type {import('../../types/ChatRequest').ChatRequest}
        */
       const chatParams = {
-        session_id: id,
+        session_id: id, // session_id 必须传递，来源于 useParams()
         query: content,
         role: 'counselor',
         reasoning_effort: null
@@ -72,12 +155,11 @@ const ConsultationPage = () => {
         chatParams,
         {
           onMessage: (delta, meta) => {
-            aiMsg = { ...aiMsg, content: aiMsg.content + (delta || '') };
-            setMessages(prev => {
-              const copy = [...prev];
-              copy[copy.length - 1] = { ...aiMsg };
-              return copy;
-            });
+            if (meta && meta.isTopic) {
+              setSessionTitle(id, delta && delta.trim() ? delta : '新对话');
+            }
+            aiMsgRef.current = { ...aiMsgRef.current, content: (aiMsgRef.current?.content || "") + (delta || "") };
+            setPendingDelta(delta || "");
           },
           onError: (err) => {
             setLoading(false);
@@ -85,6 +167,7 @@ const ConsultationPage = () => {
           },
           onComplete: () => {
             setLoading(false);
+            flushAIMsg();
           },
         }
       );
@@ -93,11 +176,20 @@ const ConsultationPage = () => {
       setToast({ visible: true, message: e?.message || 'AI回复失败，请重试' });
     }
   };
+// session_id 获取与传递链路说明：
+// 1. 通过 useParams() 获取 id，作为 session_id
+// 2. 发送消息等操作时，chatSSE 参数中必须包含 session_id
+// 3. 若 session_id 缺失，后续 Phase 会做兜底处理
 
   return (
     <>
       <SubLayout
         title="智能体咨询"
+        subtitle={
+          subtitleError ? (
+            <span style={{ color: 'red' }}>{subtitle}</span>
+          ) : subtitle
+        }
         showBack={true}
         onBack={() => navigate(-1)}
         rightActions={rightActions}

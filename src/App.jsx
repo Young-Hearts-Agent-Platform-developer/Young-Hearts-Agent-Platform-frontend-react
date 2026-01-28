@@ -50,7 +50,7 @@ function App() {
               <Route path="/auth/login" element={<LoginPage />} />
               <Route path="/auth/register" element={<RegisterPage />} />
               <Route path="/consultation/history" element={<HistoryPage />} />
-              <Route path="/consultation/chat/:sessionId" element={<ChatPage />} />
+              <Route path="/consultation/chat/:id" element={<ChatPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
