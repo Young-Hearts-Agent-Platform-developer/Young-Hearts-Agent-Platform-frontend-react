@@ -43,30 +43,7 @@ export async function chatSSE(params, { onMessage, onError, onComplete } = {}) {
   const url = `${API_BASE}/chat`;
   let controller = new AbortController();
   let completed = false;
-  // 单行处理逻辑提取为函数
-  function handleLine(line) {
-    if (!line.trim()) return false;
-    if (line.startsWith('[ERROR]')) {
-      if (onError) onError(line.slice(7));
-      if (onMessage) onMessage(line.slice(7), { isError: true });
-      completed = true;
-      if (onComplete) onComplete();
-      controller.abort();
-      return true; // 终止
-    }
-    if (line.startsWith('[TOPIC]')) {
-      if (onMessage) onMessage(line.slice(7), { isTopic: true });
-      return false;
-    }
-    if (line === '[DONE]') {
-      completed = true;
-      if (onComplete) onComplete();
-      controller.abort();
-      return true; // 终止
-    }
-    if (onMessage) onMessage(line, {});
-    return false;
-  }
+  
   try {
     const res = await fetch(url, {
       method: 'POST',
@@ -85,21 +62,73 @@ export async function chatSSE(params, { onMessage, onError, onComplete } = {}) {
       const { done, value } = await reader.read();
       if (done) break;
       buffer += decoder.decode(value, { stream: true });
-      // 保留换行符，按每个换行分帧，但不丢弃空行
-      let lines = buffer.split(/(\r?\n)/);
-      let temp = '';
-      for (let i = 0; i < lines.length; i++) {
-        temp += lines[i];
-        if (lines[i] === '\n' || lines[i] === '\r\n') {
-          if (handleLine(temp.replace(/\r?\n$/, ''))) return () => controller.abort();
-          temp = '';
+      
+      let parts = buffer.split('\n\n'); // SSE 消息以双换行分隔
+      buffer = parts.pop(); // 保留最后一个不完整的部分
+      
+      for (const part of parts) {
+        if (!part.trim()) continue;
+        
+        let eventType = 'message';
+        let data = '';
+        
+        // 解析行
+        const lines = part.split('\n');
+        for (const line of lines) {
+          if (line.startsWith('event:')) {
+            eventType = line.substring(6).trim();
+          } else if (line.startsWith('data:')) {
+            data += line.substring(5).trim() + '\n'; // 拼接多行data
+          }
+        }
+        data = data.trim(); // 移除末尾换行
+        
+        // 分发处理
+        if (eventType === 'message') {
+          try {
+            const obj = JSON.parse(data);
+            if (typeof obj.content === 'string') {
+              onMessage(obj.content);
+            } else {
+              console.warn('[SSE] message data.content 非字符串', data);
+            }
+          } catch (e) {
+            console.warn('[SSE] message data 解析失败', data, e);
+          }
+        } else if (eventType === 'topic') {
+          try {
+            const obj = JSON.parse(data);
+            if (typeof obj.topic === 'string') {
+              onMessage(obj.topic, { isTopic: true });
+            } else {
+              console.warn('[SSE] topic data.topic 非字符串', data);
+            }
+          } catch (e) {
+            console.warn('[SSE] topic data 解析失败', data, e);
+          }
+        } else if (eventType === 'error') {
+          try {
+            const obj = JSON.parse(data);
+            if (typeof obj.detail === 'string') {
+              onMessage(obj.detail, { isError: true });
+              if (onError) onError(obj.detail);
+            } else {
+              console.warn('[SSE] error data.detail 非字符串', data);
+            }
+          } catch (e) {
+            console.warn('[SSE] error data 解析失败', data, e);
+          }
+        } else if (eventType === 'done') {
+          completed = true;
+          if (onComplete) onComplete();
+          controller.abort();
+          return () => controller.abort();
         }
       }
-      buffer = temp;
     }
     // 处理流结束后buffer中残留内容
     if (buffer && !completed) {
-      handleLine(buffer);
+      // 处理残留，但SSE通常不残留
     }
     if (!completed && onComplete) onComplete();
   } catch (err) {

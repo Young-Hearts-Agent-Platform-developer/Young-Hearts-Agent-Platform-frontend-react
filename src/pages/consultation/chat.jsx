@@ -28,6 +28,16 @@ const ConsultationPage = () => {
   // 是否副标题加载失败
   const [subtitleError, setSubtitleError] = useState(false);
 
+  // 自动滚动到底部
+  const messagesEndRef = React.useRef(null);
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
   const { setSessionTitle } = useConsultSession();
 
   // 头部右侧操作区（仅保留转人工）
@@ -44,11 +54,31 @@ const ConsultationPage = () => {
     if (!id) return;
     getSessionMessages(id)
       .then(res => {
+        let list = [];
         if (Array.isArray(res)) {
-          setMessages(res);
+          list = res;
         } else if (res && Array.isArray(res.messages)) {
-          setMessages(res.messages);
+          list = res.messages;
         }
+
+        // 若返回数组长度>1，尝试按时间字段判断并确保为时间正序（早->晚）
+        // 期望：list[0] 是最早的消息
+        if (list.length > 1) {
+          const firstItem = list[0];
+          const lastItem = list[list.length - 1];
+          const firstTime = firstItem.created_at || firstItem.timestamp || firstItem.time;
+          const lastTime = lastItem.created_at || lastItem.timestamp || lastItem.time;
+          
+          try {
+            if (firstTime && lastTime && (new Date(firstTime) > new Date(lastTime))) {
+              // 此时第一条时间晚于最后一条，说明是倒序（最新在前），翻转为正序
+              list = list.slice().reverse(); 
+            }
+          } catch (e) {
+            console.warn('无法解析历史消息时间戳以确定顺序', { firstTime, lastTime });
+          }
+        }
+        setMessages(list);
       })
       .catch(err => {
         // 可选：错误处理
@@ -69,22 +99,36 @@ const ConsultationPage = () => {
     getSessions()
       .then(res => {
         if (ignore) return;
-        if (res && Array.isArray(res.sessions)) {
-          const session = res.sessions.find(s => String(s.id) === String(id));
-          if (session && session.title) {
-            setSubtitle(session.title);
-            setSubtitleError(false);
-          } else {
-            setSubtitle('新对话');
-            setSubtitleError(false);
-          }
+        
+        let sessionList = [];
+        
+        // 兼容两种返回格式：
+        // 1. 直接返回数组 (当前后端行为): [...]
+        // 2. 包装在 sessions 字段中 (原预期): { sessions: [...] }
+        if (Array.isArray(res)) {
+          sessionList = res;
+        } else if (res && Array.isArray(res.sessions)) {
+          sessionList = res.sessions;
         } else {
-          setSubtitle('加载失败');
+          console.error('getSessions: 非预期响应格式', res);
+          // 若无法解析列表，则不更新副标题（保持“新对话”或上一次状态）
           setSubtitleError(true);
+          return;
+        }
+        
+        // 在 sessionList 中查找
+        const session = sessionList.find(s => String(s.id) === String(id));
+        
+        if (session) {
+            // 优先使用 title，没有则用 topic，再没有显示默认
+            const displayTitle = session.title || session.topic || '历史对话';
+            setSubtitle(displayTitle);
+            setSubtitleError(false);
         }
       })
-      .catch(() => {
+      .catch((err) => {
         if (ignore) return;
+        console.error('getSessions 拉取副标题失败', err);
         setSubtitle('加载失败');
         setSubtitleError(true);
       });
@@ -156,10 +200,15 @@ const ConsultationPage = () => {
         {
           onMessage: (delta, meta) => {
             if (meta && meta.isTopic) {
-              setSessionTitle(id, delta && delta.trim() ? delta : '新对话');
+              const newTitle = delta && delta.trim() ? delta : '新对话';
+              setSessionTitle(id, newTitle);
+              setSubtitle(newTitle);
+            } else if (meta && meta.isError) {
+              setToast({ visible: true, message: delta });
+            } else {
+              aiMsgRef.current = { ...aiMsgRef.current, content: (aiMsgRef.current?.content || "") + (delta || "") };
+              setPendingDelta(delta || "");
             }
-            aiMsgRef.current = { ...aiMsgRef.current, content: (aiMsgRef.current?.content || "") + (delta || "") };
-            setPendingDelta(delta || "");
           },
           onError: (err) => {
             setLoading(false);
@@ -195,8 +244,8 @@ const ConsultationPage = () => {
         rightActions={rightActions}
         headerStyle={{ position: 'fixed', top: 0, width: '100%', zIndex: 10 }}
         children={
-          <div style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
-            <div style={{ flex: 1, overflow: 'hidden' }}>
+          <div style={{ height: 'calc(100vh - 56px)', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ flex: 1, overflowY: 'auto', paddingBottom: '10px' }}>
               {/* 消息流渲染，AI 消息含 sources 字段时渲染引用卡 */}
               <div>
                 {messages.map((msg, idx) => (
@@ -222,6 +271,7 @@ const ConsultationPage = () => {
                     )}
                   </div>
                 ))}
+                <div ref={messagesEndRef} />
               </div>
             </div>
             <InputBar onSend={handleSend} disabled={loading} />

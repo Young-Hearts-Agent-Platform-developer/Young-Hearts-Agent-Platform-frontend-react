@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useLayoutEffect } from 'react';
 import PropTypes from 'prop-types';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import './index.css';
 
 // 消息气泡组件
@@ -7,7 +9,15 @@ function MessageBubble({ message }) {
   const isUser = message.role === 'user';
   return (
     <div className={`message-bubble ${isUser ? 'user' : 'ai'}`}>
-      <div className="bubble-content">{message.content}</div>
+      <div className="bubble-content markdown-body">
+        {isUser ? (
+          message.content
+        ) : (
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+            {message.content}
+          </ReactMarkdown>
+        )}
+      </div>
       <div className="bubble-meta">{message.time}</div>
     </div>
   );
