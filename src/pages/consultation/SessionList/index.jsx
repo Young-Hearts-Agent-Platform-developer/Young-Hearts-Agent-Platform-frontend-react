@@ -30,7 +30,7 @@ function SessionList({ sessions, loading, error, onSessionClick }) {
           key={s.id}
           onClick={() => onSessionClick && onSessionClick(s.id)}
         >
-          <div className="session-list__title">{s.title || '新对话'}</div>
+          <div className="session-list__title">{s.topic || '新对话'}</div>
           <div className="session-list__meta">
             <span>{s.lastMessage || ''}</span>
             <span className="session-list__date">{s.createdAt ? new Date(s.createdAt).toLocaleString() : ''}</span>

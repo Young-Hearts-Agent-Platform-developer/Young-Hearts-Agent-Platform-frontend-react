@@ -85,6 +85,7 @@ export async function chatSSE(params, { onMessage, onError, onComplete } = {}) {
         
         // 分发处理
         if (eventType === 'message') {
+          if (!data) continue;
           try {
             const obj = JSON.parse(data);
             if (typeof obj.content === 'string') {
@@ -96,6 +97,7 @@ export async function chatSSE(params, { onMessage, onError, onComplete } = {}) {
             console.warn('[SSE] message data 解析失败', data, e);
           }
         } else if (eventType === 'topic') {
+          if (!data) continue;
           try {
             const obj = JSON.parse(data);
             if (typeof obj.topic === 'string') {
@@ -107,6 +109,7 @@ export async function chatSSE(params, { onMessage, onError, onComplete } = {}) {
             console.warn('[SSE] topic data 解析失败', data, e);
           }
         } else if (eventType === 'error') {
+          if (!data) continue;
           try {
             const obj = JSON.parse(data);
             if (typeof obj.detail === 'string') {
