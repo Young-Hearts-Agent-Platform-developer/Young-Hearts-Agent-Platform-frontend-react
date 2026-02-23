@@ -6,6 +6,7 @@ import { ConsultSessionProvider } from './store/consultSession';
 const HomePage = lazy(() => import('./pages/home/index.jsx'));
 // const ConsultationPage = lazy(() => import('./pages/consultation/index.jsx'));
 const KnowledgePage = lazy(() => import('./pages/knowledge/index.jsx'));
+const KnowledgeDetailPage = lazy(() => import('./pages/knowledge/detail.jsx'));
 const CommunityPage = lazy(() => import('./pages/community/index.jsx'));
 const PersonalInfoPage = lazy(() => import('./pages/my/PersonalInfo.jsx'));
 
@@ -14,6 +15,10 @@ const RegisterPage = lazy(() => import('./pages/auth/register.jsx'));
 const MyPage = lazy(() => import('./pages/my/index.jsx'));
 const HistoryPage = lazy(() => import('./pages/consultation/history.jsx'));
 const ChatPage = lazy(() => import('./pages/consultation/chat.jsx'));
+
+const ContributePage = lazy(() => import('./pages/workspace/contribute.jsx'));
+const ReviewPage = lazy(() => import('./pages/workspace/review.jsx'));
+const ReviewDetailPage = lazy(() => import('./pages/workspace/reviewDetail.jsx'));
 
 function NotFound() {
   return <div style={{ padding: 32, textAlign: 'center' }}>404 Not Found</div>;
@@ -44,6 +49,7 @@ function App() {
               <Route path="/home" element={<HomePage />} />
               {/* <Route path="/consultation" element={<ConsultationPage />} /> */}
               <Route path="/knowledge" element={<KnowledgePage />} />
+              <Route path="/knowledge/:id" element={<KnowledgeDetailPage />} />
               <Route path="/community" element={<CommunityPage />} />
               <Route path="/my" element={<MyPage />} />
               <Route path="/my/personal-info" element={<PersonalInfoPage />} />
@@ -51,6 +57,9 @@ function App() {
               <Route path="/auth/register" element={<RegisterPage />} />
               <Route path="/consultation/history" element={<HistoryPage />} />
               <Route path="/consultation/chat/:id" element={<ChatPage />} />
+              <Route path="/workspace/contribute" element={<ContributePage />} />
+              <Route path="/workspace/review" element={<ReviewPage />} />
+              <Route path="/workspace/review/:id" element={<ReviewDetailPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>

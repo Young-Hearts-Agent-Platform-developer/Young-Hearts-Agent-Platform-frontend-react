@@ -7,7 +7,7 @@ tools:
 handoffs:
   - label: 进入执行阶段 (Implementer)
     agent: Implementer
-    prompt: "Implement: 请执行计划。计划路径: {plan_path}; Phase: Phase 1"
+    prompt: "Implement: 请执行计划。计划已附在上下文; Phase: Phase 1"
     send: false
 ---
 
