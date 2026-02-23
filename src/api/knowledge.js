@@ -64,6 +64,26 @@ export const knowledgeApi = {
   },
 
   /**
+   * 更新知识条目
+   * @param {string|number} id - 知识条目 ID
+   * @param {Object} data - 知识条目数据
+   * @returns {Promise<Object>}
+   */
+  updateItem: async (id, data) => {
+    const res = await fetch(`${API_BASE}/items/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+      credentials: 'include',
+    });
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      throw new Error(errData.message || '更新知识条目失败');
+    }
+    return await res.json();
+  },
+
+  /**
    * 获取待审核列表
    * @param {Object} params - 查询参数
    * @returns {Promise<Object>}
