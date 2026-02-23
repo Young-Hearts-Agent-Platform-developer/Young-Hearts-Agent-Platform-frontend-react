@@ -125,6 +125,88 @@
   text-decoration: underline;
 }
 
+.checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.checkbox-group label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: normal;
+  margin-bottom: 0;
+  cursor: pointer;
+}
+
+.checkbox-group input[type="checkbox"] {
+  margin: 0;
+  cursor: pointer;
+}
+
+.custom-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background-color: #e6f7ff;
+  color: var(--primary-color, #1890ff);
+  border: 1px solid #91d5ff;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.tag button {
+  background: none;
+  border: none;
+  color: var(--primary-color, #1890ff);
+  cursor: pointer;
+  padding: 0;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.tag button:hover {
+  color: #ff4d4f;
+}
+
+.add-custom-option {
+  display: flex;
+  gap: 8px;
+}
+
+.add-custom-option input {
+  flex: 1;
+  padding: 6px 10px;
+  border: 1px solid #dcdfe6;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.add-custom-option button {
+  padding: 6px 12px;
+  background-color: #f0f2f5;
+  border: 1px solid #dcdfe6;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.add-custom-option button:hover {
+  background-color: #e6f7ff;
+  border-color: var(--primary-color, #1890ff);
+  color: var(--primary-color, #1890ff);
+}
+
 .upload-btn {
   background-color: #f0f2f5;
   border: 1px solid #dcdfe6;

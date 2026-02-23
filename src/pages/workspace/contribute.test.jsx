@@ -71,8 +71,8 @@ describe('ContributePage', () => {
     expect(screen.getByLabelText('标题')).toBeInTheDocument();
     expect(screen.getByLabelText('分类')).toBeInTheDocument();
     expect(screen.getByLabelText('正文 (Markdown) 或 上传文件')).toBeInTheDocument();
-    expect(screen.getByLabelText('目标受众')).toBeInTheDocument();
-    expect(screen.getByLabelText('适用年龄')).toBeInTheDocument();
+    expect(screen.getByText('目标受众')).toBeInTheDocument();
+    expect(screen.getByText('适用年龄')).toBeInTheDocument();
   });
 
   it('should save draft to localStorage on input change', async () => {

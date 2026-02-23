@@ -19,8 +19,8 @@ export default function ContributePage() {
     category: '',
     content: '',
     risk_level: 'low',
-    target_audience: '',
-    applicable_age: '',
+    target_audience: [],
+    applicable_age: [],
   });
   const [selectedFile, setSelectedFile] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -31,6 +31,10 @@ export default function ContributePage() {
   const categoryOptions = ['心理', '教育', '生活', '健康', '其他'];
   const targetAudienceOptions = ['心青年', '家长', '志愿者', '专家', '公众'];
   const applicableAgeOptions = ['儿童 (0-12)', '青少年 (13-18)', '青年 (19-35)', '成年 (36+)', '全年龄段'];
+
+  // 新增选项输入状态
+  const [newAudience, setNewAudience] = useState('');
+  const [newAge, setNewAge] = useState('');
 
   const showToast = (message, type = 'info') => {
     setToast({ visible: true, message, type });
@@ -62,8 +66,8 @@ export default function ContributePage() {
             category: data.category || '',
             content: data.content || '',
             risk_level: data.risk_level || 'low',
-            target_audience: data.target_audience || '',
-            applicable_age: data.applicable_age || '',
+            target_audience: Array.isArray(data.target_audience) ? data.target_audience : (data.target_audience ? [data.target_audience] : []),
+            applicable_age: Array.isArray(data.applicable_age) ? data.applicable_age : (data.applicable_age ? [data.applicable_age] : []),
           });
         } catch (error) {
           showToast(error.message || '获取原数据失败', 'error');
@@ -99,6 +103,36 @@ export default function ContributePage() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleCheckboxChange = (field, value) => {
+    setFormData(prev => {
+      const currentList = prev[field];
+      if (currentList.includes(value)) {
+        return { ...prev, [field]: currentList.filter(item => item !== value) };
+      } else {
+        return { ...prev, [field]: [...currentList, value] };
+      }
+    });
+  };
+
+  const handleAddCustomOption = (field, value, setValue) => {
+    if (!value.trim()) return;
+    setFormData(prev => {
+      const currentList = prev[field];
+      if (!currentList.includes(value.trim())) {
+        return { ...prev, [field]: [...currentList, value.trim()] };
+      }
+      return prev;
+    });
+    setValue('');
+  };
+
+  const handleRemoveOption = (field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: prev[field].filter(item => item !== value)
+    }));
   };
 
   const handleFileUpload = (e) => {
@@ -141,8 +175,8 @@ export default function ContributePage() {
         uploadData.append('title', formData.title);
         uploadData.append('category', formData.category);
         uploadData.append('risk_level', formData.risk_level);
-        uploadData.append('target_audience', formData.target_audience);
-        uploadData.append('applicable_age', formData.applicable_age);
+        uploadData.append('target_audience', JSON.stringify(formData.target_audience));
+        uploadData.append('applicable_age', JSON.stringify(formData.applicable_age));
         
         // 假设后端有一个专门处理带文件上传的接口，或者 uploadFile 接口能处理所有字段
         // 这里我们假设 uploadFile 接口可以接收所有表单数据
@@ -253,48 +287,90 @@ export default function ContributePage() {
           </div>
 
           <div className="form-group">
-            <label htmlFor="target_audience">目标受众</label>
-            <div className="input-with-options">
+            <label>目标受众</label>
+            <div className="checkbox-group">
+              {targetAudienceOptions.map(opt => (
+                <label key={opt}>
+                  <input
+                    type="checkbox"
+                    checked={formData.target_audience.includes(opt)}
+                    onChange={() => handleCheckboxChange('target_audience', opt)}
+                  />
+                  {opt}
+                </label>
+              ))}
+            </div>
+            <div className="custom-tags">
+              {formData.target_audience.filter(item => !targetAudienceOptions.includes(item)).map(tag => (
+                <span key={tag} className="tag">
+                  {tag}
+                  <button type="button" onClick={() => handleRemoveOption('target_audience', tag)}>×</button>
+                </span>
+              ))}
+            </div>
+            <div className="add-custom-option">
               <input
                 type="text"
-                id="target_audience"
-                name="target_audience"
-                value={formData.target_audience}
-                onChange={handleChange}
-                placeholder="请输入或选择目标受众"
+                value={newAudience}
+                onChange={(e) => setNewAudience(e.target.value)}
+                placeholder="输入自定义受众"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleAddCustomOption('target_audience', newAudience, setNewAudience);
+                  }
+                }}
               />
-              <select 
-                onChange={(e) => setFormData(prev => ({ ...prev, target_audience: e.target.value }))}
-                value={targetAudienceOptions.includes(formData.target_audience) ? formData.target_audience : ''}
+              <button 
+                type="button" 
+                onClick={() => handleAddCustomOption('target_audience', newAudience, setNewAudience)}
               >
-                <option value="" disabled>选择已有受众</option>
-                {targetAudienceOptions.map(opt => (
-                  <option key={opt} value={opt}>{opt}</option>
-                ))}
-              </select>
+                添加
+              </button>
             </div>
           </div>
 
           <div className="form-group">
-            <label htmlFor="applicable_age">适用年龄</label>
-            <div className="input-with-options">
+            <label>适用年龄</label>
+            <div className="checkbox-group">
+              {applicableAgeOptions.map(opt => (
+                <label key={opt}>
+                  <input
+                    type="checkbox"
+                    checked={formData.applicable_age.includes(opt)}
+                    onChange={() => handleCheckboxChange('applicable_age', opt)}
+                  />
+                  {opt}
+                </label>
+              ))}
+            </div>
+            <div className="custom-tags">
+              {formData.applicable_age.filter(item => !applicableAgeOptions.includes(item)).map(tag => (
+                <span key={tag} className="tag">
+                  {tag}
+                  <button type="button" onClick={() => handleRemoveOption('applicable_age', tag)}>×</button>
+                </span>
+              ))}
+            </div>
+            <div className="add-custom-option">
               <input
                 type="text"
-                id="applicable_age"
-                name="applicable_age"
-                value={formData.applicable_age}
-                onChange={handleChange}
-                placeholder="请输入或选择适用年龄"
+                value={newAge}
+                onChange={(e) => setNewAge(e.target.value)}
+                placeholder="输入自定义年龄段"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleAddCustomOption('applicable_age', newAge, setNewAge);
+                  }
+                }}
               />
-              <select 
-                onChange={(e) => setFormData(prev => ({ ...prev, applicable_age: e.target.value }))}
-                value={applicableAgeOptions.includes(formData.applicable_age) ? formData.applicable_age : ''}
+              <button 
+                type="button" 
+                onClick={() => handleAddCustomOption('applicable_age', newAge, setNewAge)}
               >
-                <option value="" disabled>选择已有年龄段</option>
-                {applicableAgeOptions.map(opt => (
-                  <option key={opt} value={opt}>{opt}</option>
-                ))}
-              </select>
+                添加
+              </button>
             </div>
           </div>
 
