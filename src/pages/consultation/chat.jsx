@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Toast from '../../components/Toast';
 import MessageList from './MessageList';
-import ReferenceCard from './ReferenceCard';
-import QuickActions from './QuickActions';
 import InputBar from './InputBar';
 import { useNavigate, useParams } from 'react-router-dom';
 import SubLayout from '../../layouts/SubLayout';
@@ -27,16 +25,6 @@ const ConsultationPage = () => {
   const [subtitle, setSubtitle] = useState('新对话');
   // 是否副标题加载失败
   const [subtitleError, setSubtitleError] = useState(false);
-
-  // 自动滚动到底部
-  const messagesEndRef = React.useRef(null);
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
 
   const { setSessionTitle } = useConsultSession();
 
@@ -244,35 +232,16 @@ const ConsultationPage = () => {
         rightActions={rightActions}
         headerStyle={{ position: 'fixed', top: 0, width: '100%', zIndex: 10 }}
         children={
-          <div style={{ height: 'calc(100vh - 56px)', display: 'flex', flexDirection: 'column' }}>
-            <div style={{ flex: 1, overflowY: 'auto', paddingBottom: '10px' }}>
-              {/* 消息流渲染，AI 消息含 sources 字段时渲染引用卡 */}
-              <div>
-                {messages.map((msg, idx) => (
-                  <div key={msg.id || idx}>
-                    <MessageList messages={[msg]} />
-                    {/* AI 消息含 sources 字段时渲染引用卡 */}
-                    {msg.role === 'ai' && Array.isArray(msg.sources) && msg.sources.length > 0 && (
-                      <ReferenceCard sources={msg.sources} />
-                    )}
-                    {/* AI 消息含 quickActions 字段时渲染快捷操作条 */}
-                    {msg.role === 'ai' && Array.isArray(msg.quickActions) && msg.quickActions.length > 0 && (
-                      <QuickActions actions={msg.quickActions.map(action => ({
-                        ...action,
-                        onClick: () => {
-                          if (typeof action.onClick === 'function') {
-                            action.onClick();
-                          } else if (action.value) {
-                            // 默认填充到输入框或触发发送
-                            // 可根据实际需求扩展
-                          }
-                        }
-                      }))} />
-                    )}
-                  </div>
-                ))}
-                <div ref={messagesEndRef} />
-              </div>
+          <div style={{ height: 'calc(100vh - 56px)', display: 'flex', flexDirection: 'column', background: '#f7f8fa' }}>
+            <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+              {/* 消息流渲染 */}
+              <MessageList 
+                messages={messages} 
+                onQuickAction={(value) => {
+                  // 默认填充到输入框或触发发送
+                  handleSend(value);
+                }} 
+              />
             </div>
             <InputBar onSend={handleSend} disabled={loading} />
           </div>

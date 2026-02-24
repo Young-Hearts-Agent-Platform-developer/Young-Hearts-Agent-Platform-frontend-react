@@ -1,15 +1,17 @@
 .reference-card-list {
-  margin: 12px 0 12px 32px;
+  margin: 8px 0 0 0;
   background: #f6f8fa;
-  border-left: 4px solid #4e8cff;
+  border-left: 4px solid #1677ff;
   border-radius: 6px;
-  padding: 8px 12px;
+  padding: 10px 12px;
+  max-width: 85%;
+  box-sizing: border-box;
 }
 .reference-card-title {
   font-size: 13px;
-  color: #4e8cff;
+  color: #1677ff;
   font-weight: bold;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
 }
 .reference-card-items {
   display: flex;
