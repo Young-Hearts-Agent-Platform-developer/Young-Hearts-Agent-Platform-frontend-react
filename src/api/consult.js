@@ -108,6 +108,18 @@ export async function chatSSE(params, { onMessage, onError, onComplete } = {}) {
           } catch (e) {
             console.warn('[SSE] topic data 解析失败', data, e);
           }
+        } else if (eventType === 'sources' || eventType === 'source') {
+          if (!data) continue;
+          try {
+            const obj = JSON.parse(data);
+            if (Array.isArray(obj)) {
+              onMessage(obj, { isSources: true });
+            } else {
+              console.warn('[SSE] sources data 非数组', data);
+            }
+          } catch (e) {
+            console.warn('[SSE] sources data 解析失败', data, e);
+          }
         } else if (eventType === 'error') {
           if (!data) continue;
           try {

@@ -66,6 +66,19 @@ const ConsultationPage = () => {
             console.warn('无法解析历史消息时间戳以确定顺序', { firstTime, lastTime });
           }
         }
+
+        // 尝试解析 sources 字段
+        list = list.map(msg => {
+          if (typeof msg.sources === 'string') {
+            try {
+              msg.sources = JSON.parse(msg.sources);
+            } catch (e) {
+              console.warn('解析历史消息 sources 失败', msg.sources);
+            }
+          }
+          return msg;
+        });
+
         setMessages(list);
       })
       .catch(err => {
@@ -191,11 +204,14 @@ const ConsultationPage = () => {
               const newTitle = delta && delta.trim() ? delta : '新对话';
               setSessionTitle(id, newTitle);
               setSubtitle(newTitle);
+            } else if (meta && meta.isSources) {
+              aiMsgRef.current = { ...aiMsgRef.current, sources: delta };
+              flushAIMsg();
             } else if (meta && meta.isError) {
               setToast({ visible: true, message: delta });
             } else {
               aiMsgRef.current = { ...aiMsgRef.current, content: (aiMsgRef.current?.content || "") + (delta || "") };
-              setPendingDelta(delta || "");
+              setPendingDelta(delta || " ");
             }
           },
           onError: (err) => {
