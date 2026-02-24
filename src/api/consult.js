@@ -142,6 +142,22 @@ export async function chatSSE(params, { onMessage, onError, onComplete } = {}) {
 }
 
 /**
+ * 删除会话
+ * @param {number|string} id - 会话唯一标识
+ * @returns {Promise<void>}
+ */
+export async function deleteSession(id) {
+  if (!id) throw new Error('会话 id 不能为空');
+  const res = await fetch(`${API_BASE}/sessions/${id}`, {
+    method: 'DELETE',
+    credentials: 'include',
+  });
+  if (!res.ok) {
+    throw new Error('删除会话失败');
+  }
+}
+
+/**
  * 获取历史会话列表（标准结构：{ sessions: [...] }）
  * @returns {Promise<{ sessions: Array<{ sessionId: string, title: string, createdAt: string, lastMessage: string }> }>}
  */

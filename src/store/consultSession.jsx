@@ -1,7 +1,7 @@
 // src/store/consultSession.js
 // 会话状态管理，异常/权限处理补充
 import { createContext, useContext, useState } from 'react';
-import { getSessions, createSession } from '../api/consult';
+import { getSessions, createSession, deleteSession } from '../api/consult';
 
 const ConsultSessionContext = createContext();
 
@@ -53,9 +53,34 @@ export function ConsultSessionProvider({ children }) {
     ));
   };
 
+  // 删除单个会话
+  const removeSession = async (sessionId) => {
+    try {
+      await deleteSession(sessionId);
+      setSessions(prev => prev.filter(s => s.id !== sessionId));
+      setError(null);
+    } catch (e) {
+      setError('删除会话失败');
+      throw e;
+    }
+  };
+
+  // 批量删除会话
+  const removeSessions = async (sessionIds) => {
+    try {
+      // 假设后端没有批量删除接口，我们并发调用单个删除接口
+      await Promise.all(sessionIds.map(id => deleteSession(id)));
+      setSessions(prev => prev.filter(s => !sessionIds.includes(s.id)));
+      setError(null);
+    } catch (e) {
+      setError('批量删除会话失败');
+      throw e;
+    }
+  };
+
   // 不依赖用户上下文，只暴露会话相关内容
   return (
-    <ConsultSessionContext.Provider value={{ sessions, loading, error, loadSessions, newSession, setSessionTitle }}>
+    <ConsultSessionContext.Provider value={{ sessions, loading, error, loadSessions, newSession, setSessionTitle, removeSession, removeSessions }}>
       {children}
     </ConsultSessionContext.Provider>
   );
