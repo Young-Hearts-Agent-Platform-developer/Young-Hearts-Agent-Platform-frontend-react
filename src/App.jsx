@@ -16,6 +16,7 @@ const MyPage = lazy(() => import('./pages/my/index.jsx'));
 const HistoryPage = lazy(() => import('./pages/consultation/history.jsx'));
 const ChatPage = lazy(() => import('./pages/consultation/chat.jsx'));
 
+const ContributeHistoryPage = lazy(() => import('./pages/workspace/contributeHistory.jsx'));
 const ContributePage = lazy(() => import('./pages/workspace/contribute.jsx'));
 const ReviewPage = lazy(() => import('./pages/workspace/review.jsx'));
 const ReviewDetailPage = lazy(() => import('./pages/workspace/reviewDetail.jsx'));
@@ -57,7 +58,8 @@ function App() {
               <Route path="/auth/register" element={<RegisterPage />} />
               <Route path="/consultation/history" element={<HistoryPage />} />
               <Route path="/consultation/chat/:id" element={<ChatPage />} />
-              <Route path="/workspace/contribute" element={<ContributePage />} />
+              <Route path="/workspace/contribute" element={<ContributeHistoryPage />} />
+              <Route path="/workspace/contribute/edit" element={<ContributePage />} />
               <Route path="/workspace/review" element={<ReviewPage />} />
               <Route path="/workspace/review/:id" element={<ReviewDetailPage />} />
               <Route path="*" element={<NotFound />} />

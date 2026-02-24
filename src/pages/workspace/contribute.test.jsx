@@ -13,9 +13,9 @@ vi.mock('../../store/useUser', () => ({
 vi.mock('../../api/knowledge', () => ({
   knowledgeApi: {
     uploadFile: vi.fn(),
-    createItem: vi.fn(),
     getItemById: vi.fn(),
     updateItem: vi.fn(),
+    deleteItem: vi.fn(),
   },
 }));
 

@@ -237,6 +237,7 @@
 }
 
 .cancel-btn,
+.draft-btn,
 .submit-btn {
   padding: 10px 20px;
   border-radius: 4px;
@@ -256,9 +257,34 @@
   background-color: #e4e7ed;
 }
 
+.draft-btn {
+  background-color: #e6f7ff;
+  color: var(--primary-color, #1890ff);
+  border: 1px solid #91d5ff;
+}
+
+.draft-btn:hover:not(:disabled) {
+  background-color: #bae0ff;
+}
+
+.draft-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 .submit-btn {
   background-color: var(--primary-color, #1890ff);
   color: #fff;
+}
+
+.delete-btn {
+  background-color: #fff1f0;
+  color: #ff4d4f;
+  border: 1px solid #ffd6d6;
+}
+
+.delete-btn:hover:not(:disabled) {
+  background-color: #ffccc7;
 }
 
 .submit-btn:hover:not(:disabled) {

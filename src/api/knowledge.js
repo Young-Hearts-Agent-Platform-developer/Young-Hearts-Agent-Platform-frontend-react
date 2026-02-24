@@ -45,20 +45,21 @@ export const knowledgeApi = {
   },
 
   /**
-   * 创建知识条目
-   * @param {Object} data - 知识条目数据
+   * 获取个人知识贡献列表
+   * @param {Object} params - 查询参数
    * @returns {Promise<Object>}
    */
-  createItem: async (data) => {
-    const res = await fetch(`${API_BASE}/items`, {
-      method: 'POST',
+  getMyItems: async (params = {}) => {
+    const queryString = new URLSearchParams(params).toString();
+    const url = queryString ? `${API_BASE}/my-items?${queryString}` : `${API_BASE}/my-items`;
+    const res = await fetch(url, {
+      method: 'GET',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
       credentials: 'include',
     });
     if (!res.ok) {
       const errData = await res.json().catch(() => ({}));
-      throw new Error(errData.message || '创建知识条目失败');
+      throw new Error(errData.message || '获取个人知识列表失败');
     }
     return await res.json();
   },
@@ -79,6 +80,24 @@ export const knowledgeApi = {
     if (!res.ok) {
       const errData = await res.json().catch(() => ({}));
       throw new Error(errData.message || '更新知识条目失败');
+    }
+    return await res.json();
+  },
+
+  /**
+   * 删除知识条目
+   * @param {string|number} id - 知识条目 ID
+   * @returns {Promise<Object>}
+   */
+  deleteItem: async (id) => {
+    const res = await fetch(`${API_BASE}/items/${id}`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+    });
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      throw new Error(errData.message || '删除知识条目失败');
     }
     return await res.json();
   },

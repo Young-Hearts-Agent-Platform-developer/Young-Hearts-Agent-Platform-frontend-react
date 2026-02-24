@@ -41,22 +41,18 @@ describe('knowledgeApi', () => {
     expect(result).toEqual(mockData);
   });
 
-  it('createItem should send POST request with data', async () => {
-    const mockData = { id: 1 };
-    const postData = { title: 'New Item' };
+  it('getMyItems should call correct URL with params', async () => {
+    const mockData = [{ id: 1, title: 'My Item' }];
     fetch.mockResolvedValueOnce({
       ok: true,
       json: async () => mockData,
     });
 
-    const result = await knowledgeApi.createItem(postData);
+    const result = await knowledgeApi.getMyItems({ status: 'draft' });
     
     expect(fetch).toHaveBeenCalledWith(
-      expect.stringContaining('/api/knowledge/items'),
-      expect.objectContaining({
-        method: 'POST',
-        body: JSON.stringify(postData),
-      })
+      expect.stringContaining('/api/knowledge/my-items?status=draft'),
+      expect.objectContaining({ method: 'GET' })
     );
     expect(result).toEqual(mockData);
   });

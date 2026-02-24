@@ -157,8 +157,7 @@ export default function ContributePage() {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (status) => {
     if (!formData.title.trim() || !formData.category.trim() || (!formData.content.trim() && !selectedFile)) {
       showToast('请填写完整信息', 'error');
       return;
@@ -166,33 +165,34 @@ export default function ContributePage() {
 
     setIsSubmitting(true);
     try {
-      let submitData = { ...formData };
-      
-      // 如果有文件，先上传文件
-      if (selectedFile) {
+      if (editId) {
+        // 更新操作 (PUT /api/knowledge/items/{id})
+        // 注意：目前 PUT 接口只接受 JSON，不支持文件替换
+        const updateData = {
+          ...formData,
+          status: status
+        };
+        await knowledgeApi.updateItem(editId, updateData);
+        showToast(status === 'draft' ? '已存为草稿' : '重新提交成功', 'success');
+      } else {
+        // 新建操作 (POST /api/knowledge/upload)
         const uploadData = new FormData();
-        uploadData.append('file', selectedFile);
         uploadData.append('title', formData.title);
         uploadData.append('category', formData.category);
         uploadData.append('risk_level', formData.risk_level);
         uploadData.append('target_audience', JSON.stringify(formData.target_audience));
         uploadData.append('applicable_age', JSON.stringify(formData.applicable_age));
+        uploadData.append('status', status);
         
-        // 假设后端有一个专门处理带文件上传的接口，或者 uploadFile 接口能处理所有字段
-        // 这里我们假设 uploadFile 接口可以接收所有表单数据
-        await knowledgeApi.uploadFile(uploadData);
-        showToast('提交成功', 'success');
-        localStorage.removeItem(DRAFT_KEY);
-      } else {
-        // 纯文本提交
-        if (editId) {
-          await knowledgeApi.updateItem(editId, submitData);
-          showToast('重新提交成功', 'success');
+        if (selectedFile) {
+          uploadData.append('file', selectedFile);
         } else {
-          await knowledgeApi.createItem(submitData);
-          showToast('提交成功', 'success');
-          localStorage.removeItem(DRAFT_KEY);
+          uploadData.append('text_content', formData.content);
         }
+        
+        await knowledgeApi.uploadFile(uploadData);
+        showToast(status === 'draft' ? '已存为草稿' : '提交成功', 'success');
+        localStorage.removeItem(DRAFT_KEY);
       }
       
       setTimeout(() => {
@@ -205,6 +205,21 @@ export default function ContributePage() {
     }
   };
 
+  const handleDelete = async () => {
+    if (!editId) return;
+    if (!window.confirm('确认要删除此知识条目吗？此操作不可恢复。')) return;
+    setIsSubmitting(true);
+    try {
+      await knowledgeApi.deleteItem(editId);
+      showToast('删除成功', 'success');
+      setTimeout(() => navigate(-1), 1200);
+    } catch (err) {
+      showToast(err.message || '删除失败', 'error');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   if (userLoading) {
     return <div style={{ padding: 32, textAlign: 'center' }}>加载中...</div>;
   }
@@ -212,7 +227,7 @@ export default function ContributePage() {
   return (
     <SubLayout title={editId ? "重新编辑知识" : "贡献知识"}>
       <div className="contribute-container">
-        <form onSubmit={handleSubmit} className="contribute-form">
+        <form onSubmit={(e) => e.preventDefault()} className="contribute-form">
           <div className="form-group">
             <label htmlFor="title">标题</label>
             <input
@@ -377,7 +392,11 @@ export default function ContributePage() {
           <div className="form-group">
             <label htmlFor="content">正文 (Markdown) 或 上传文件</label>
             <div className="upload-toolbar">
-              {selectedFile ? (
+              {editId ? (
+                <div className="selected-file-info" style={{ color: '#909399' }}>
+                  <span>编辑模式下不支持修改文件，仅支持修改文本内容和元数据</span>
+                </div>
+              ) : selectedFile ? (
                 <div className="selected-file-info">
                   <span>已选择: {selectedFile.name}</span>
                   <button type="button" className="remove-file-btn" onClick={handleRemoveFile}>
@@ -399,6 +418,7 @@ export default function ContributePage() {
                 style={{ display: 'none' }}
                 onChange={handleFileUpload}
                 accept=".txt,.md,.pdf,.doc,.docx"
+                disabled={!!editId}
               />
             </div>
             <textarea
@@ -408,7 +428,7 @@ export default function ContributePage() {
               onChange={handleChange}
               placeholder={selectedFile ? "已选择文件，正文输入已锁定" : "支持 Markdown 格式..."}
               rows={15}
-              required={!selectedFile}
+              required={!selectedFile && !editId}
               disabled={!!selectedFile}
               className={selectedFile ? 'disabled-textarea' : ''}
             />
@@ -418,8 +438,31 @@ export default function ContributePage() {
             <button type="button" className="cancel-btn" onClick={() => navigate(-1)}>
               取消
             </button>
-            <button type="submit" className="submit-btn" disabled={isSubmitting}>
-              {isSubmitting ? '提交中...' : '提交'}
+            {editId && (
+              <button
+                type="button"
+                className="delete-btn"
+                disabled={isSubmitting}
+                onClick={handleDelete}
+              >
+                删除
+              </button>
+            )}
+            <button 
+              type="button" 
+              className="draft-btn" 
+              disabled={isSubmitting}
+              onClick={() => handleSubmit('draft')}
+            >
+              存为草稿
+            </button>
+            <button 
+              type="button" 
+              className="submit-btn" 
+              disabled={isSubmitting}
+              onClick={() => handleSubmit('pending_review')}
+            >
+              {isSubmitting ? '提交中...' : '提交审核'}
             </button>
           </div>
         </form>
